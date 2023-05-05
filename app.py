@@ -7,6 +7,7 @@ import bcrypt
 import urllib.parse
 
 app = Flask(__name__)
+app.config["DEBUG"] = True
 app.secret_key = "Just a random string"
 mongoUsername = urllib.parse.quote_plus(os.getenv('MONGO_USERNAME'))
 mongoPassword =  urllib.parse.quote_plus(os.getenv('MONGO_PASSWORD'))
@@ -15,10 +16,12 @@ client = pymongo.MongoClient(uri)
 db = client.get_database('wildtrekDB')
 users = db.user
 
+
 @app.route("/")
 def index():
     print('Request for signup received')
     return render_template('index.html')
+    #   return render_template('about.html')
 
 @app.route("/signup", methods=['POST', 'GET'])
 def signup():
@@ -82,6 +85,22 @@ def logged_in():
         return redirect(url_for("login"))
 
 
+@app.route('/favicon.ico')
+def favicon():
+    return send_from_directory(os.path.join(app.root_path, 'static'),
+                               'favicon.ico', mimetype='image/vnd.microsoft.icon')
+
+@app.route('/hello', methods=['POST'])
+def hello():
+   name = request.form.get('name')
+
+   if name:
+       print('Request for hello page received with name=%s' % name)
+       return render_template('hello.html', name = name)
+   else:
+       print('Request for hello page received with no name or blank name -- redirecting')
+       return redirect(url_for('index'))
+
 
 # extra code to get some shops instead of post Temperary
 import overpy
@@ -135,6 +154,8 @@ def map():
 
     # Render the page with the map
     return render_template('map.html', markers=markers, lat=47.654170, lon=-122.302610)
+
+
 
 if __name__ == '__main__':
    app.run()
