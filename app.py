@@ -1,36 +1,86 @@
 import os
 
 from flask import (Flask, redirect, render_template, request,
-                   send_from_directory, url_for)
+                   send_from_directory, url_for, session, flash)
 import pymongo
+import bcrypt
+import urllib.parse
 
 app = Flask(__name__)
-app.secret_key = os.random(24)
-mongoUsername = os.getenv('MONGO_USERNAME')
-mongoPassword = os.getenv('MONGO_PASSWORD')
-uri = 'mongodb+srv://' + mongoUsername + ':' + mongoPassword + '@cluster0.zr80h.mongodb.net/wildtrekDB'
+app.secret_key = "Just a random string"
+mongoUsername = urllib.parse.quote_plus(os.getenv('MONGO_USERNAME'))
+mongoPassword =  urllib.parse.quote_plus(os.getenv('MONGO_PASSWORD'))
+uri = 'mongodb+srv://' + mongoUsername + ':' + mongoPassword + '@cluster0.zr80h.mongodb.net'
 client = pymongo.MongoClient(uri)
+db = client.get_database('wildtrekDB')
+users = db.user
 
-@app.route('/')
+@app.route("/")
 def index():
-   print('Request for index page received')
-   return render_template('index.html')
+    print('Request for signup received')
+    return render_template('index.html')
 
-@app.route('/favicon.ico')
-def favicon():
-    return send_from_directory(os.path.join(app.root_path, 'static'),
-                               'favicon.ico', mimetype='image/vnd.microsoft.icon')
+@app.route("/signup", methods=['POST', 'GET'])
+def signup():
+    print('Request for signup received')
+    if "username" in session:
+        return redirect(url_for("logged_in"))
+    if request.method == "POST":
+        username = request.form.get("username")
+        
+        password = request.form.get("password")
+        
+        user_found = users.find_one({"username": username})
+        if user_found:
+            return render_template('error.html', message='Username already exists.')
+        else:
+            hashed = bcrypt.hashpw(password.encode('utf-8'), bcrypt.gensalt())
+            user_input = {'username': username, 'password': hashed}
+            users.insert_one(user_input)
+            
+            user_data = users.find_one({"username": username})
+            new_username = user_data['username']
+   
+            return render_template('loggedin.html', username=new_username)
+    return render_template('signup.html')
 
-@app.route('/hello', methods=['POST'])
-def hello():
-   name = request.form.get('name')
+@app.route("/login", methods=["POST", "GET"])
+def login():
+    print('Request for login received')
+    if "username" in session:
+        return redirect(url_for("logged_in"))
 
-   if name:
-       print('Request for hello page received with name=%s' % name)
-       return render_template('hello.html', name = name)
-   else:
-       print('Request for hello page received with no name or blank name -- redirecting')
-       return redirect(url_for('index'))
+    if request.method == "POST":
+        username = request.form.get("username")
+        password = request.form.get("password")
+
+       
+        user_found = users.find_one({"username": username})
+        if user_found:
+            user_val = user_found['username']
+            passwordcheck = user_found['password']
+            
+            if bcrypt.checkpw(password.encode('utf-8'), passwordcheck):
+                session["username"] = user_val
+                return redirect(url_for('logged_in'))
+            else:
+                if "username" in session:
+                    return redirect(url_for("logged_in"))
+                flash('Wrong password')
+                return render_template('login.html')
+        else:
+            flash('Username not found')
+            return render_template('login.html')
+    return render_template('login.html')
+
+@app.route('/logged_in')
+def logged_in():
+    if "username" in session:
+        username = session["username"]
+        return render_template('loggedin.html', username=username)
+    else:
+        return redirect(url_for("login"))
+
 
 
 # extra code to get some shops instead of post Temperary
