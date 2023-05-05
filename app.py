@@ -2,9 +2,14 @@ import os
 
 from flask import (Flask, redirect, render_template, request,
                    send_from_directory, url_for)
+import pymongo
 
 app = Flask(__name__)
-
+app.secret_key = os.random(24)
+mongoUsername = os.getenv('MONGO_USERNAME')
+mongoPassword = os.getenv('MONGO_PASSWORD')
+uri = 'mongodb+srv://' + mongoUsername + ':' + mongoPassword + '@cluster0.zr80h.mongodb.net/wildtrekDB'
+client = pymongo.MongoClient(uri)
 
 @app.route('/')
 def index():
