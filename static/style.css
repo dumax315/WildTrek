@@ -180,3 +180,66 @@ a.signInUpOtherPage {
     text-align: center;
     margin-top: 1em;
 }
+
+
+/* code for about page */
+.aboutText {
+    font-family: 'ubuntu';
+    font-style: normal;
+    font-weight: 500;
+    font-size: 16px;
+    text-align: center;
+    color: #535865;
+    max-width: 600px;
+}
+
+.aboutTitle .wildTrekName {
+    font-size: 40px;
+    margin-top: 21px;
+    line-height: initial;
+}
+
+.aboutText {
+    max-width: 600px;
+    font-size: 24px;
+    margin: auto;
+}
+
+.aboutText p{
+    margin: 1em 1.4em;
+}
+
+img.logo.aboutLogo {
+    width: 65px;
+}
+
+.ageBottomText {
+    font-family: 'ubuntu';
+    font-style: normal;
+    font-weight: 500;
+    font-size: 18px;
+
+    text-align: center;
+
+    color: #535865;
+    margin: auto;
+    width: 80vw;
+    max-width: 600px;
+    margin-top: 3em;
+}
+
+.ageQuestionText {
+    font-family: 'ubuntu';
+font-style: normal;
+font-weight: 500;
+font-size: 40px;
+text-align: center;
+
+
+color: #535865;
+margin: auto;
+    width: 80vw;
+    max-width: 600px;
+    margin-top: 2em;
+    margin-bottom: 1em;
+}

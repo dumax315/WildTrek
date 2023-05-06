@@ -99,6 +99,33 @@ def signout():
     session.clear()
     return redirect(url_for("index"))
 
+@app.route('/about')
+def about():
+    if "username" in session:
+        username = session["username"]
+        return render_template('about.html')
+    else:
+        return redirect(url_for("index"))
+    
+@app.route('/ageConfirmation')
+def ageConfirmation():
+    if "username" in session:
+        username = session["username"]
+        return render_template("ageConfirmation.html")
+    else:
+        return redirect(url_for("index"))
+    
+@app.route('/ageSubmit')
+def ageSubmit():
+    args = request.args
+    print(args.get("old"))
+    # return render_template('about.html')
+    if "username" in session:
+        username = session["username"]
+        return redirect(url_for("home"))
+    else:
+        return redirect(url_for("index"))
+
 @app.route('/favicon.ico')
 def favicon():
     return send_from_directory(os.path.join(app.root_path, 'static'),
@@ -166,13 +193,12 @@ def post():
     if post_found:
         print('Post Found')
         #encoded = base64.b64encode(post_found['image'])
-        return render_template('post.html', message=post_found['image'])
+        return render_template('post.html', message=post_found)
     print('Post Not Found')
-    return redirect(url_for("home"))
+    return render_template('error.html', message='Post Not Found')
+
 # extra code to get some shops instead of post Temperary
 import overpy
-
-
 def get_shops(latitude, longitude):
     # Initialize the API
     api = overpy.Overpass()
