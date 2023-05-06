@@ -8,10 +8,19 @@ import bcrypt
 import urllib.parse
 from bson.objectid import ObjectId
 import base64
+import uuid
+import boto3, botocore
 
 app = Flask(__name__)
+
 app.config["DEBUG"] = True
-app.secret_key = "Just a random string"
+app.config['S3_BUCKET'] = os.getenv('S3_BUCKET_NAME')
+app.config['S3_KEY'] = os.getenv('AWS_ACCESS_KEY')
+app.config['S3_SECRET'] = os.getenv('AWS_ACCESS_SECRET')
+app.config['S3_LOCATION'] = 'http://{}.s3.amazonaws.com/'.format(os.getenv('S3_BUCKET_NAME'))
+
+app.secret_key = b'_5#y2L"F4Q8z\n\xec]/'
+
 mongoUsername = urllib.parse.quote_plus(os.getenv('MONGO_USERNAME'))
 mongoPassword =  urllib.parse.quote_plus(os.getenv('MONGO_PASSWORD'))
 uri = 'mongodb+srv://' + mongoUsername + ':' + mongoPassword + '@cluster0.zr80h.mongodb.net'
@@ -20,17 +29,19 @@ db = client.get_database('wildtrekDB')
 users = db.user
 posts = db.post
 
+
 @app.route("/")
 def index():
+    if "username" in session:
+        return redirect(url_for("logged_in"))
     print('Request for signup received')
     return render_template('index.html')
-    #   return render_template('about.html')
 
 @app.route("/signup", methods=['POST', 'GET'])
 def signup():
     print('Request for signup received')
     if "username" in session:
-        return redirect(url_for("logged_in"))
+        return redirect(url_for("home"))
     if request.method == "POST":
         username = request.form.get("username")
         
@@ -41,20 +52,20 @@ def signup():
             return render_template('error.html', message='Username already exists.')
         else:
             hashed = bcrypt.hashpw(password.encode('utf-8'), bcrypt.gensalt())
-            user_input = {'username': username, 'password': hashed}
+            user_input = {'username': username, 'password': hashed, 'posts': []}
             users.insert_one(user_input)
             
             user_data = users.find_one({"username": username})
             new_username = user_data['username']
    
-            return render_template('loggedin.html', username=new_username)
+            return render_template('home.html', username=new_username)
     return render_template('signup.html')
 
 @app.route("/login", methods=["POST", "GET"])
 def login():
     print('Request for login received')
     if "username" in session:
-        return redirect(url_for("logged_in"))
+        return redirect(url_for("home"))
 
     if request.method == "POST":
         username = request.form.get("username")
@@ -68,25 +79,27 @@ def login():
             
             if bcrypt.checkpw(password.encode('utf-8'), passwordcheck):
                 session["username"] = user_val
-                return redirect(url_for('logged_in'))
+                return redirect(url_for('home'))
             else:
                 if "username" in session:
-                    return redirect(url_for("logged_in"))
-                flash('Wrong password')
+                    return redirect(url_for("home"))
                 return render_template('login.html')
         else:
-            flash('Username not found')
             return render_template('login.html')
     return render_template('login.html')
 
-@app.route('/logged_in')
-def logged_in():
+@app.route('/home')
+def home():
     if "username" in session:
         username = session["username"]
-        return render_template('loggedin.html', username=username)
+        return render_template('home.html', username=username)
     else:
-        return redirect(url_for("login"))
+        return redirect(url_for("index"))
 
+@app.route("/signout")
+def signout():
+    session.clear()
+    return redirect(url_for("index"))
 
 @app.route('/favicon.ico')
 def favicon():
@@ -104,6 +117,61 @@ def hello():
        print('Request for hello page received with no name or blank name -- redirecting')
        return redirect(url_for('index'))
 
+@app.route("/upload", methods=["POST", "GET"])
+def upload():
+    print('Request for upload received')
+    if "username" not in session:
+        return redirect(url_for("index"))
+    if request.method == "POST":
+        image = request.files['img']
+        image_bytes = image.read()
+        print(image_bytes)
+        #generating own id for aws s3 filenames
+        id = uuid.uuid4().hex
+        image.filename = id
+
+        upload_file_to_s3(image, app.config["S3_BUCKET"])
+        fileLocation='http://' + os.getenv('S3_BUCKET_NAME') + '.s3.amazonaws.com/' + image.filename
+
+        caption = request.form.get("caption")
+        hashtags = request.form.getlist("hashtags")
+        post_input = {'_id': id,'image': fileLocation, 'caption': caption, 'hashtags': hashtags}
+        posts.insert_one(post_input)
+        users.find_one_and_update({'username':session['username']}, {'$push': {'posts': post_input}})
+
+    return render_template('upload.html')
+
+def upload_file_to_s3(file, bucket_name, acl="public-read"):
+    try:
+        s3 = boto3.client(
+            "s3",
+            aws_access_key_id=app.config['S3_KEY'],
+            aws_secret_access_key=app.config['S3_SECRET']
+        )
+        s3.upload_fileobj(
+            file,
+            bucket_name,
+            file.filename,
+            ExtraArgs={
+                "ACL": acl,
+                "ContentType": file.content_type    #Set appropriate content type as per the file
+            }
+        )
+    except Exception as e:
+        print("Something Happened: ", e)
+    #     return e
+    # return "{}{}".format(app.config["S3_LOCATION"], file.filename)
+
+@app.route("/post", methods=["POST", "GET"])
+def post():
+    id = '2d305346cb004a4eb921e27aa7c213d2'
+    post_found = posts.find_one({"_id": id})
+    if post_found:
+        print('Post Found')
+        #encoded = base64.b64encode(post_found['image'])
+        return render_template('post.html', message=post_found['image'])
+    print('Post Not Found')
+    return redirect(url_for("home"))
 
 def identify(image_id):
     post_found = posts.find_one({"_id": image_id})

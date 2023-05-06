@@ -1,0 +1,11 @@
+<p>You are logged in as {{username}}</p>
+<form method="get" action="{{url_for('upload')}}">
+    <div>
+        <button type="submit">Make a post</button>
+    </div>
+</form>
+<form method="post" action="{{url_for('signout')}}">
+    <div>
+        <button type="submit">Log Out</button>
+    </div>
+</form>
