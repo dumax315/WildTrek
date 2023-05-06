@@ -1,0 +1,33 @@
+<!doctype html>
+
+<head>
+    <title>Upload</title>
+</head>
+<html>
+
+<form method="post" action="{{url_for('upload')}}" enctype="multipart/form-data">
+    <label for="img">Select image:</label>
+    <div>
+        <input type="file" id="img" name="img" accept="image/*">
+    </div>
+    <label>Add a caption</label>
+    <div>
+        <input type="text" id="caption" name="caption">
+    </div>
+    <label>Add hashtags</label>
+    <div>
+        <select name="hashtags" id="hashtags" multiple>
+            <option value="wild_plants">wild plants</option>
+            <option value="garden_plants">garden plants</option>
+            <option value="animals">animals</option>
+            <option value="sky">sky</option>
+            <option value="landscape">landscape</option>
+            <option value="other">other</option>
+          </select>
+    </div>
+    <div>
+        <button type="submit">Post</button>
+    </div>
+</form>
+
+</html>
