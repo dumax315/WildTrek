@@ -2,9 +2,12 @@ import os
 
 from flask import (Flask, redirect, render_template, request,
                    send_from_directory, url_for, session, flash)
+import requests
 import pymongo
 import bcrypt
 import urllib.parse
+from bson.objectid import ObjectId
+import base64
 
 app = Flask(__name__)
 app.config["DEBUG"] = True
@@ -15,7 +18,7 @@ uri = 'mongodb+srv://' + mongoUsername + ':' + mongoPassword + '@cluster0.zr80h.
 client = pymongo.MongoClient(uri)
 db = client.get_database('wildtrekDB')
 users = db.user
-
+posts = db.post
 
 @app.route("/")
 def index():
@@ -101,6 +104,33 @@ def hello():
        print('Request for hello page received with no name or blank name -- redirecting')
        return redirect(url_for('index'))
 
+
+def identify(image_id):
+    post_found = posts.find_one({"_id": image_id})
+    if post_found:
+        encoded = base64.b64encode(post_found['image'][1])
+        encoded_string = encoded.decode("ascii")
+        #print(encoded_string)
+        params = {
+            "api_key": os.getenv('PLANTID_API_KEY'),
+            "images": [encoded_string]
+        }
+        headers = {
+            "Content-Type": "application/json",
+        }
+        response = requests.post("https://api.plant.id/v2/identify",
+                            json=params,
+                            headers=headers)
+        print(response.status_code)
+        if response.status_code >= 200 and response.status_code < 300:
+            suggestions = response.json()['suggestions'] #list of dict suggestions
+            max_suggestion = len(suggestions) if len(suggestions) <= 3 else 3
+            name_list = []
+            for i in range(max_suggestion):
+                name_list.append(suggestions[i]['plant_name'])
+            print(name_list)
+            return name_list  
+    return []
 
 # extra code to get some shops instead of post Temperary
 import overpy
