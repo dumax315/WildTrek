@@ -1,0 +1,41 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    
+    <link rel="stylesheet" href="static/style.css" />
+    <link rel="stylesheet" href="static/navBarStyle.css" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>{% block title %}{% endblock %} - WildTrek</title>
+    {% block head %}
+    {% endblock %}
+</head>
+<body>
+    {% block content %}{% endblock %}
+    <nav class="navbar">
+        
+        <a href="/upload" class={% block upload %}{% endblock %}>
+            <img src="static/images/photo.png">
+            <div class="navItemText">Upload</div>
+        </a>
+        <a href="/map" class={% block map %}{% endblock %}>
+            <img src="static/images/map.png">
+            <div class="navItemText">Map</div>
+        </a>
+        <a href="/home" class={% block home %}{% endblock %}>
+            <img src="static/images/Wildtrek.png">
+            <div class="navItemText">Home/Feed</div>
+        </a>
+        <a href="/profile" class={% block profile %}{% endblock %}>
+            <img src="static/images/profile.png">
+            <div class="navItemText">Profile</div>
+        </a>
+        <a href="/friends" class={% block friends %}{% endblock %}>
+            <img src="static/images/friends.png">
+            <div class="navItemText">Friends</div>
+        </a>
+    </nav>
+
+    </nav>
+</body>
+</html>
