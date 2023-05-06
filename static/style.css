@@ -49,19 +49,9 @@ img.bottomBorderImage {
     color: #734128;
 }
 
-.largeButtons .login {
-    margin-top: 25vh;
-    background: #A0C497;
-    border-radius: 15px;
-    width: 45vw;
-    padding: 0.25em;
-    font-size: 42px;
-    display: block;
-    margin: auto;
-}
-.largeButtons .signup {
+.largeButtons a {
     /* Rectangle 7 */
-    
+
     background: #A0C497;
     border-radius: 15px;
     width: 45vw;
@@ -70,6 +60,15 @@ img.bottomBorderImage {
     font-size: 42px;
     display: block;
     margin: auto;
+    text-align: center;
+    color:#734128;
+}
+
+.largeButtons .login {
+
+}
+.largeButtons .signup {
+
     margin-top: 1em;
 }
 .signup:hover {
@@ -77,4 +76,107 @@ img.bottomBorderImage {
 }
 .login:hover {
     background: #629460;
+}
+
+img.logo {
+    width: 30%;
+    margin: auto;
+    display: block;
+    margin-top: 1em;
+    margin-bottom: 1em;
+    max-width: 137px;
+}
+
+.welcomeText {
+    /* Welcome to */
+    
+    font-family: 'Sunflower';
+    font-style: normal;
+    font-weight: 500;
+    font-size: 30px;
+    line-height: 38px;
+    text-align: center;
+    line-height: initial;
+    color: #8E5132;
+}
+
+.signInUpTitle .wildTrekName {
+    /* font-family: 'Sunflower'; */
+    /* font-style: normal; */
+    /* font-weight: 500; */
+    /* font-size: 64px; */
+    /* line-height: 80px; */
+    /* text-align: center; */
+    /* color: #734128; */
+    margin-top: 0;
+    font-size:45px;
+    padding:0px;
+    line-height: initial;
+}
+
+.signUpIn {
+    
+    width:80%;
+    margin:auto;
+    margin-top: 1em;
+}
+.setUpAccountText {
+    font-family: 'ubuntu';
+    font-style: normal;
+    font-weight: 500;
+    font-size: 30px;
+    line-height: 44px;
+    text-align: center;
+    color: #535865;
+}
+
+.signInUpForm {
+    font-family: 'ubuntu';
+    font-style: normal;
+    font-weight: 500;
+    font-size: 35px;
+    /* line-height: 44px; */
+    /* text-align: center; */
+    color: #535865;
+    max-width: 300px;
+    margin: auto;
+}
+
+.signInUpForm input {
+    display: block;
+    background: rgba(217, 217, 217, 0.4);
+    width: 100%;
+    padding: 12px 20px;
+    margin: 8px 0;
+    box-sizing: border-box;
+    border-radius: .2em;
+    border: 1px solid #535865;
+}
+
+button.signInUpSubmit {
+
+    background: #A0C497;
+    border-radius: 15px;
+    font-family: 'ubuntu';
+    font-style: normal;
+    font-weight: 500;
+    font-size: 30px;
+    text-align: center;
+    padding:.5em 2em;
+    margin:auto;
+    margin-top:1.5em;
+    display:block;
+    color: #000000;
+}
+
+button.signInUpSubmit:hover {
+    background: #629460;
+}
+
+a.signInUpOtherPage {
+    display: block;
+    /* margin: auto; */
+    width: 100%;
+    text-align: center;
+    margin-top: 1em;
 }

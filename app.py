@@ -7,8 +7,8 @@ import bcrypt
 import urllib.parse
 
 app = Flask(__name__)
-app.config["DEBUG"] = True
-app.secret_key = "Just a random string"
+# app.config["DEBUG"] = True
+app.secret_key = "Just 3easfa random string"
 mongoUsername = urllib.parse.quote_plus(os.getenv('MONGO_USERNAME'))
 mongoPassword =  urllib.parse.quote_plus(os.getenv('MONGO_PASSWORD'))
 uri = 'mongodb+srv://' + mongoUsername + ':' + mongoPassword + '@cluster0.zr80h.mongodb.net'
@@ -16,12 +16,14 @@ client = pymongo.MongoClient(uri)
 db = client.get_database('wildtrekDB')
 users = db.user
 
+print(users)
 
 @app.route("/")
 def index():
+    if "username" in session:
+        return redirect(url_for("logged_in"))
     print('Request for signup received')
     return render_template('index.html')
-    #   return render_template('about.html')
 
 @app.route("/signup", methods=['POST', 'GET'])
 def signup():
@@ -84,7 +86,10 @@ def logged_in():
     else:
         return redirect(url_for("login"))
 
-
+@app.route("/signout")
+def signout():
+    session.clear()
+    return redirect(url_for("index"))
 @app.route('/favicon.ico')
 def favicon():
     return send_from_directory(os.path.join(app.root_path, 'static'),
