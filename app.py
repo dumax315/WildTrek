@@ -2,10 +2,12 @@ import os
 
 from flask import (Flask, redirect, render_template, request,
                    send_from_directory, url_for, session, flash)
+import requests
 import pymongo
 import bcrypt
 import urllib.parse
 from bson.objectid import ObjectId
+import base64
 import uuid
 import boto3, botocore
 
@@ -115,7 +117,6 @@ def hello():
        print('Request for hello page received with no name or blank name -- redirecting')
        return redirect(url_for('index'))
 
-
 @app.route("/upload", methods=["POST", "GET"])
 def upload():
     print('Request for upload received')
@@ -123,6 +124,7 @@ def upload():
         return redirect(url_for("index"))
     if request.method == "POST":
         image = request.files['img']
+        image_bytes = image.read()
         #generating own id for aws s3 filenames
         id = uuid.uuid4().hex
         image.filename = id
@@ -132,7 +134,9 @@ def upload():
 
         caption = request.form.get("caption")
         hashtags = request.form.getlist("hashtags")
-        post_input = {'_id': id,'image': fileLocation, 'caption': caption, 'hashtags': hashtags}
+        suggestions = identify(image_bytes)
+        plant_suggestions = suggestions if len(suggestions) > 0 else ['N/A']
+        post_input = {'_id': id,'image': fileLocation, 'caption': caption, 'hashtags': hashtags, 'plant_suggestions': plant_suggestions}
         posts.insert_one(post_input)
         users.find_one_and_update({'username':session['username']}, {'$push': {'posts': post_input}})
 
@@ -159,16 +163,62 @@ def upload_file_to_s3(file, bucket_name, acl="public-read"):
     #     return e
     # return "{}{}".format(app.config["S3_LOCATION"], file.filename)
 
-@app.route("/post", methods=["POST", "GET"])
-def post():
-    id = '2d305346cb004a4eb921e27aa7c213d2'
+#@app.route("/post", methods=["POST", "GET"])
+def post(id):
     post_found = posts.find_one({"_id": id})
     if post_found:
         print('Post Found')
         #encoded = base64.b64encode(post_found['image'])
-        return render_template('post.html', message=post_found['image'])
+        #return render_template('post.html', message=post_found['image'])
+        return post_found
     print('Post Not Found')
-    return redirect(url_for("home"))
+    return {}
+
+#@app.route("/posts", methods=["POST", "GET"])
+def posts():
+    return list(posts.find({}))
+
+def user_info(username):
+    user_found = users.find_one({'username': username})
+    info = {}
+    if user_found:
+        info = {}
+        info['username'] = user_found['username']
+        info['bio'] = user_found['bio']
+        info['posts'] = user_found['posts']
+    return info
+
+
+def identify(image_bytes):
+    print('Identifying image')
+    # post_found = posts.find_one({"_id": image_id})
+    # if post_found:
+    encoded = base64.b64encode(image_bytes)
+    encoded_string = encoded.decode("ascii")
+    #print(encoded_string)
+    params = {
+        "api_key": os.getenv('PLANTID_API_KEY'),
+        "images": [encoded_string]
+    }
+    headers = {
+        "Content-Type": "application/json",
+    }
+    response = requests.post("https://api.plant.id/v2/identify",
+                        json=params,
+                        headers=headers)
+    print(response.status_code)
+    if response.status_code >= 200 and response.status_code < 300:
+        suggestions = response.json()['suggestions'] #list of dict suggestions
+        max_suggestion = len(suggestions) if len(suggestions) <= 3 else 3
+        name_list = []
+        for i in range(max_suggestion):
+            name_list.append(suggestions[i]['plant_name'])
+        print(name_list)
+        return name_list  
+    return []
+
+
+
 # extra code to get some shops instead of post Temperary
 import overpy
 
