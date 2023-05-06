@@ -11,7 +11,7 @@
   .navbar a {
     float: left;
     display: block;
-    color: #f2f2f2;
+    color: black;
     text-align: center;
     padding: 14px 16px;
     text-decoration: none;
@@ -29,8 +29,6 @@
   
   .navbar a.active {
     background-color: #629460;
-    color: black;
-
 
   }
   
