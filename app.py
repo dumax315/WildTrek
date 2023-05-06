@@ -10,6 +10,7 @@ import uuid
 import boto3, botocore
 
 app = Flask(__name__)
+
 app.config["DEBUG"] = True
 app.config['S3_BUCKET'] = os.getenv('S3_BUCKET_NAME')
 app.config['S3_KEY'] = os.getenv('AWS_ACCESS_KEY')
@@ -17,6 +18,7 @@ app.config['S3_SECRET'] = os.getenv('AWS_ACCESS_SECRET')
 app.config['S3_LOCATION'] = 'http://{}.s3.amazonaws.com/'.format(os.getenv('S3_BUCKET_NAME'))
 
 app.secret_key = b'_5#y2L"F4Q8z\n\xec]/'
+
 mongoUsername = urllib.parse.quote_plus(os.getenv('MONGO_USERNAME'))
 mongoPassword =  urllib.parse.quote_plus(os.getenv('MONGO_PASSWORD'))
 uri = 'mongodb+srv://' + mongoUsername + ':' + mongoPassword + '@cluster0.zr80h.mongodb.net'
@@ -25,11 +27,13 @@ db = client.get_database('wildtrekDB')
 users = db.user
 posts = db.post
 
+
 @app.route("/")
 def index():
+    if "username" in session:
+        return redirect(url_for("logged_in"))
     print('Request for signup received')
     return render_template('index.html')
-    #   return render_template('about.html')
 
 @app.route("/signup", methods=['POST', 'GET'])
 def signup():
@@ -89,12 +93,28 @@ def home():
         return render_template('home.html', username=username)
     else:
         return redirect(url_for("index"))
-    
-@app.route("/logout", methods=["POST", "GET"])
-def logout():
-    if "username" in session:
-        session.pop("username", None)
-    return render_template('index.html')
+
+@app.route("/signout")
+def signout():
+    session.clear()
+    return redirect(url_for("index"))
+
+@app.route('/favicon.ico')
+def favicon():
+    return send_from_directory(os.path.join(app.root_path, 'static'),
+                               'favicon.ico', mimetype='image/vnd.microsoft.icon')
+
+@app.route('/hello', methods=['POST'])
+def hello():
+   name = request.form.get('name')
+
+   if name:
+       print('Request for hello page received with name=%s' % name)
+       return render_template('hello.html', name = name)
+   else:
+       print('Request for hello page received with no name or blank name -- redirecting')
+       return redirect(url_for('index'))
+
 
 @app.route("/upload", methods=["POST", "GET"])
 def upload():

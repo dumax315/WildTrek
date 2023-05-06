@@ -1,28 +1,24 @@
-<!doctype html>
+{% extends "base.html" %}
+{% block title %}Sign up{% endblock %}
 
-<head>
-    <title>Sign Up</title>
-</head>
-<html>
+{% block content %}
+<div class="signInUpTitle">
+    <img class="logo" src="static/images/Wildtrek.png">
+    <div class="welcomeText">
+        Welcome to
+    </div>
+    <div class="wildTrekName">WildTrek</div>
+</div>
 
-<body>
-    <main>
-        <form method="post" action="{{url_for('signup')}}">
-            <div>
-                <label>Username</label>
-                <div>
-                    <input type="text" id="username" name="username">
-                </div>
-                <label>Password</label>
-                <div>
-                    <input type="text" id="password" name="password">
-                </div>
-                <div>
-                    <button type="submit">Sign Up</button>
-                </div>
-            </div>
-        </form>
-    </main>
-</body>
-
-</html>
+<form class="signUpIn" method="post" action="{{url_for('signup')}}">
+    <div class="setUpAccountText">Set up an account!</div>
+    <div class="signInUpForm">
+        <label>Username</label>
+        <input type="text" id="username" name="username">
+        <label>Password</label>
+        <input type="password" id="password" name="password">
+        <button class="signInUpSubmit" type="submit">Sign Up</button>
+    </div>
+    <a class="signInUpOtherPage" href="/login">Login instead</a>
+</form>
+{% endblock %}

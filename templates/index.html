@@ -1,24 +1,21 @@
-<!doctype html>
+{% extends "base.html" %}
+{% block title %}WildTrek{% endblock %}
+{% block content %}
+    <div class="signInUpTitle">
+        <img class="logo" src="static/images/hiking-icon.webp">
+        <div class="wildTrekName">WildTrek</div>
+    </div>
 
-<head>
-    <title>Wildtrek</title>
-</head>
-<html>
-
-<body>
-    <main>
-        <form method="post" action="{{url_for('login')}}">
-                <div>
-                    <button type="submit">Log In</button>
-                </div>
-        </form>
-        <form method="get" action="{{url_for('signup')}}">
-          <div>
-              <button type="submit">Sign Up</button>
-          </div>
-        </form>
-    </main>
-    
-</body>
-
-</html>
+    <div class="largeButtons">
+        <a class="login" href="{{url_for('login')}}">
+            Login
+        </a>
+        <a class="signup" href="{{url_for('signup')}}">
+            Sign up
+        </a>
+    </div>
+    <div class="borderContainer">
+        <img class="topBorderImage" src="static/images/top.png">
+        <img class="bottomBorderImage" src="static/images/bottom.png">
+    </div>
+{% endblock %}
