@@ -202,8 +202,10 @@ def post(id):
     return {}
 
 #@app.route("/posts", methods=["POST", "GET"])
-def posts():
+def getposts():
     return list(posts.find({}))
+
+print(getposts())
 
 def user_info(username):
     user_found = users.find_one({'username': username})
