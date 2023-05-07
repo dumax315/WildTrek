@@ -277,18 +277,17 @@ def convert_coordinates(gps_latitude, gps_longitude, gps_latitude_ref, gps_longi
     return [gps_latitude_decimal, gps_longitude_decimal]
 
 
-@app.route("/post", methods=["POST", "GET"])
-def post():
-    args = request.args
-    if(args.get("id") == None):
-        return redirect(url_for("home"))
-    id = args.get("id")
+#@app.route("/post", methods=["POST", "GET"])
+def post(id):
     post_found = posts.find_one({"_id": id}) 
     if post_found:
         print('Post Found')
-        return render_template('post.html', message=post_found)
+        #encoded = base64.b64encode(post_found['image'])
+        #return render_template('post.html', message=post_found['image'])
+        print(post_found)
+        return post_found
     print('Post Not Found')
-    return redirect(url_for('home'))
+    return None
 
 #@app.route("/getposts", methods=["POST", "GET"])
 def getposts():
