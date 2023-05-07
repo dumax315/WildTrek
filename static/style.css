@@ -267,6 +267,8 @@ margin: auto;
     max-width: 650px;
     margin: auto;
     width: 80vw;
+    position: relative;
+
 }
 
 .postAuthorContainer {
@@ -312,6 +314,45 @@ div#postAuthorName {
     border:none;
     width:100px;
     height:100px;
+}
+
+ul.tags {
+    list-style-type: none;
+    display: flex;
+    max-width: 351px;
+    width: 100%;
+    justify-content: space-between;
+}
+
+.tags li {
+    background: #96BE8C;
+    padding: .5em;
+    border-radius: .5em;
+}
+
+a.sPostButton {
+    color: #000000f5;
+    text-decoration: none;
+    font-family: "ubuntu";
+    font-size: 100px;
+    position: absolute;
+    top: 128px;
+    /* transform: translateY(-50%); */
+    border-radius: 100%;
+    background: #978e8ebd;
+    padding: 0px;
+    margin: 0px;
+    width: 100px;
+    height: 100px;
+    text-align: center;
+    line-height: 90px;
+    display: block;
+    /* vertical-align: top; */
+}
+
+
+a.sPostButton.rightPostButton {
+    right:0px;
 }
 
 @media screen and (max-width: 400px) {

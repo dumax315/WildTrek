@@ -6,19 +6,27 @@
     <div class="wildTrekName">Wildtrek</div>
     <div class="homeUsernameText">Welcome back {{username}}</div>
 </div>
+
 <div class="displayedPost">
+    {% if index != 0 %}
+        <a class="sPostButton leftPostButton" href="/home?index={{index-1}}">&lt;</a>
+    {% endif %}
+    <a class="sPostButton rightPostButton" href="/home?index={{index+1}}">&gt;</a>
     <div class="postAuthorContainer">
         <img id="postAuthorPfp" src="static/images/profile.png">
-        <div id="postAuthorName">JaneDoe</div>
+        <div id="postAuthorName">{{ currentPosts[index].username }}</div>
     </div>
-    <img id="postImage" src="static/images/testImage.png">
+    <img id="postImage" src="{{ currentPosts[index].image }}">
     <div class="imageInfoBox">
-        <div id="postCaption">Caption Caption Caption</div>
+        <div id="postCaption">{{ currentPosts[index].caption }}</div>
         <div id="tags">
             <ul class="tags">
-                <li>Nature</li>
-                <li>animal</li>
-                <li>Landscape</li>
+                {% for tag in currentPosts[index].hashtags %}
+                    <li>{{tag}}</li>
+                {% endfor %}
+                {% for tag in currentPosts[index].plant_suggestions %}
+                    <li>AI: {{tag}}</li>
+                {% endfor %}
               </ul>
         </div>
         <div class="postButtons">
@@ -27,17 +35,15 @@
         </div>
     </div>
 </div>
-{% for post in currentPosts %}
-    <div class="loadedposts">
-        <img src="{{ post.image }}">
-        {{ post.caption }}
-    </div>
-{% endfor %}
+
 
 
 <div class="extraScrollSpace"></div>
 <script>
     console.log("{{currentPosts}}");
+    document.getElementById("postLike").addEventListener("click",  function(){ 
+        document.getElementById("postLike").src="static/images/heartFilled.png"
+    });
 </script>
 {% endblock %}
 
