@@ -10,6 +10,10 @@ from bson.objectid import ObjectId
 import base64
 import uuid
 import boto3, botocore
+import random
+import datetime
+#import PIL
+from exif import Image
 
 app = Flask(__name__)
 
@@ -152,7 +156,26 @@ def upload():
         return redirect(url_for("index"))
     if request.method == "POST":
         image = request.files['img']
+        image.seek(0)
         image_bytes = image.read()
+        exif_img = Image(image)
+
+        #Extract coordinates of the taken image
+        coordinates = []
+        if(exif_img.has_exif):
+            try:
+                gps_latitude =exif_img.gps_latitude
+                gps_longitude = exif_img.gps_longitude
+                gps_latitude_ref = exif_img.gps_latitude_ref
+                gps_longitude_ref = exif_img.gps_longitude_ref
+                if gps_latitude and gps_longitude and gps_latitude_ref and gps_longitude_ref:
+                    coordinates = convert_coordinates(gps_latitude, gps_longitude, gps_latitude_ref, gps_longitude_ref)
+            except Exception as e:
+                print(e)
+        if len(coordinates) != 2:
+            rand_lat = random.uniform(-0.1, 0.1)
+            rand_lon = random.uniform(-0.1, 0.1)
+            coordinates = [47.759+rand_lat, -122.189+rand_lon] #uw bothell coordinates
         #generating own id for aws s3 filenames
         id = uuid.uuid4().hex
         image.filename = id
@@ -162,9 +185,23 @@ def upload():
 
         caption = request.form.get("caption")
         hashtags = request.form.getlist("hashtags")
+
         suggestions = identify(image_bytes)
         plant_suggestions = suggestions if len(suggestions) > 0 else ['N/A']
-        post_input = {'_id': id,'image': fileLocation, 'caption': caption, 'hashtags': hashtags, 'plant_suggestions': plant_suggestions}
+
+        post_input = {'_id': id,
+                      'timestamp': datetime.datetime.utcnow(),
+                      'username':session['username'], 
+                      'image': fileLocation, 
+                      'caption': caption, 
+                      'hashtags': hashtags, 
+                      'plant_suggestions': plant_suggestions,
+                      'lat': coordinates[0],
+                      'lon': coordinates[1],
+                      'likes': 0,
+                      'liked_users': [],
+                      'comments': []
+        }
         posts.insert_one(post_input)
         users.find_one_and_update({'username':session['username']}, {'$push': {'posts': post_input}})
 
@@ -177,6 +214,8 @@ def upload_file_to_s3(file, bucket_name, acl="public-read"):
             aws_access_key_id=app.config['S3_KEY'],
             aws_secret_access_key=app.config['S3_SECRET']
         )
+        #file_data = file.read()
+        file.seek(0)
         s3.upload_fileobj(
             file,
             bucket_name,
@@ -186,26 +225,39 @@ def upload_file_to_s3(file, bucket_name, acl="public-read"):
                 "ContentType": file.content_type    #Set appropriate content type as per the file
             }
         )
+        #s3.put_object(Body=file_data, Bucket=bucket_name, Key=file.filename)
     except Exception as e:
         print("Something Happened: ", e)
     #     return e
     # return "{}{}".format(app.config["S3_LOCATION"], file.filename)
 
+def convert_coordinates(gps_latitude, gps_longitude, gps_latitude_ref, gps_longitude_ref):
+    # Convert GPS latitude to decimal degrees
+    gps_latitude_decimal = gps_latitude[0] + (gps_latitude[1] / 60) + (gps_latitude[2] / 3600)
+    if gps_latitude_ref in ['S', 'W']:
+        gps_latitude_decimal = -gps_latitude_decimal
+    # Convert GPS longitude to decimal degrees
+    gps_longitude_decimal = gps_longitude[0] + (gps_longitude[1] / 60) + (gps_longitude[2] / 3600)
+    if gps_longitude_ref in ['S', 'W']:
+        gps_longitude_decimal = -gps_longitude_decimal
+
+    return [gps_latitude_decimal, gps_longitude_decimal]
+
+
 #@app.route("/post", methods=["POST", "GET"])
 def post(id):
-    post_found = posts.find_one({"_id": id})
+    post_found = posts.find_one({"post_id": id}) #have two ids(_id and post_id), using post_id for now
     if post_found:
         print('Post Found')
         #encoded = base64.b64encode(post_found['image'])
         #return render_template('post.html', message=post_found['image'])
         return post_found
     print('Post Not Found')
-    return {}
+    return None
 
-#@app.route("/posts", methods=["POST", "GET"])
+#@app.route("/getposts", methods=["POST", "GET"])
 def getposts():
-    return list(posts.find({}))
-
+    return list(posts.find({}).sort({'timestamp': -1}))
 
 def user_info(username):
     user_found = users.find_one({'username': username})
@@ -220,8 +272,6 @@ def user_info(username):
 
 def identify(image_bytes):
     print('Identifying image')
-    # post_found = posts.find_one({"_id": image_id})
-    # if post_found:
     encoded = base64.b64encode(image_bytes)
     encoded_string = encoded.decode("ascii")
     #print(encoded_string)
@@ -299,7 +349,5 @@ def map():
     # Render the page with the map
     return render_template('map.html', markers=markers, lat=47.654170, lon=-122.302610)
 
-
-
 if __name__ == '__main__':
-   app.run()
+   app.run(debug=True)
