@@ -56,7 +56,7 @@ def signup():
             return render_template('error.html', message='Username already exists.')
         else:
             hashed = bcrypt.hashpw(password.encode('utf-8'), bcrypt.gensalt())
-            user_input = {'username': username, 'password': hashed, 'posts': []}
+            user_input = {'username': username, 'password': hashed, 'profile_picture': '', 'bio': '','posts': []}
             users.insert_one(user_input)
             
             user_data = users.find_one({"username": username})
@@ -274,25 +274,22 @@ def convert_coordinates(gps_latitude, gps_longitude, gps_latitude_ref, gps_longi
     return [gps_latitude_decimal, gps_longitude_decimal]
 
 
-#@app.route("/post", methods=["POST", "GET"])
-def post(id):
+@app.route("/post", methods=["POST", "GET"])
+def post():
+    args = request.args
+    if(args.get("id") == None):
+        return redirect(url_for("home"))
+    id = args.get("id")
     post_found = posts.find_one({"_id": id}) 
     if post_found:
         print('Post Found')
-        #encoded = base64.b64encode(post_found['image'])
-        #return render_template('post.html', message=post_found['image'])
-        print(post_found)
-        return post_found
+        return render_template('post.html', message=post_found)
     print('Post Not Found')
-    return None
+    return redirect(url_for('home'))
 
 #@app.route("/getposts", methods=["POST", "GET"])
 def getposts():
     return list(posts.find({}).sort('timestamp', pymongo.DESCENDING))
-
-print(getposts())
-
-
 
 def user_info(username):
     user_found = users.find_one({'username': username})
@@ -300,6 +297,7 @@ def user_info(username):
     if user_found:
         info = {}
         info['username'] = user_found['username']
+        info['profile_picture'] = user_found['profile_picture']
         info['bio'] = user_found['bio']
         info['posts'] = user_found['posts']
     return info
@@ -332,6 +330,8 @@ def like():
     if 'username' in session:
         try:
             args = request.args
+            if(args.get("id") == None):
+                return redirect(url_for("home"))
             id = args.get("id")
             post_found = posts.find_one({"_id": id}) 
             if post_found:
@@ -348,6 +348,8 @@ def comment():
     if 'username' in session:
         try:
             args = request.args
+            if(args.get("id") == None):
+                return redirect(url_for("home"))
             id = args.get("id")
             comment = session['username'] + ': ' + request.form.get("comment")
             post_found = posts.find_one({"_id": id}) 
