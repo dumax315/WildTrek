@@ -386,3 +386,13 @@ span.comName {
     font-size: 20px;
     font-family: ubuntu;
 }
+
+div#postCaption {
+    font-family: 'ubuntu';
+    font-style: normal;
+    font-weight: 500;
+    font-size: 35px;
+    /* line-height: 44px; */
+    /* text-align: center; */
+    color: #535865;
+}
