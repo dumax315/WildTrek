@@ -60,7 +60,7 @@ def signup():
             return render_template('error.html', message='Username already exists.')
         else:
             hashed = bcrypt.hashpw(password.encode('utf-8'), bcrypt.gensalt())
-            user_input = {'username': username, 'password': hashed, 'posts': []}
+            user_input = {'username': username, 'password': hashed, 'profile_picture': '', 'bio': '','posts': []}
             users.insert_one(user_input)
             
             user_data = users.find_one({"username": username})
@@ -312,16 +312,13 @@ def post(id):
 def getposts():
     return list(posts.find({}).sort('timestamp', pymongo.DESCENDING))
 
-print(getposts())
-
-
-
 def user_info(username):
     user_found = users.find_one({'username': username})
     info = {}
     if user_found:
         info = {}
         info['username'] = user_found['username']
+        info['profile_picture'] = user_found['profile_picture']
         info['bio'] = user_found['bio']
         info['posts'] = user_found['posts']
     return info
@@ -354,6 +351,8 @@ def like():
     if 'username' in session:
         try:
             args = request.args
+            if(args.get("id") == None):
+                return redirect(url_for("home"))
             id = args.get("id")
             post_found = posts.find_one({"_id": id}) 
             if post_found:
@@ -370,6 +369,8 @@ def comment():
     if 'username' in session:
         try:
             args = request.args
+            if(args.get("id") == None):
+                return redirect(url_for("home"))
             id = args.get("id")
             print(request.json)
             comment = session['username'] + ': ' + request.json["comment"]
