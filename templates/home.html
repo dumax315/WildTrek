@@ -13,7 +13,7 @@
     {% endif %}
     <a class="sPostButton rightPostButton" href="/home?index={{index+1}}">&gt;</a>
     <div id="postAuthorContainerID" class="postAuthorContainer">
-        <img id="postAuthorPfp" src="static/images/profile.png">
+        <img id="postAuthorPfp" src="https://wildtrekimages.theohal.repl.co/images/profile.png">
         <div id="postAuthorName" >{{ currentPosts[index].username }}</div>
     </div>
 
@@ -31,8 +31,8 @@
             </ul>
         </div>
         <div class="postButtons">
-            <img id="postLike" src="static/images/heartEmpty.png">
-            <img id="postComment" src="static/images/comment.png">
+            <img id="postLike" src="https://wildtrekimages.theohal.repl.co/images/heartEmpty.png">
+            <img id="postComment" src="https://wildtrekimages.theohal.repl.co/images/comment.png">
         </div>
     </div>
 </div>
@@ -43,7 +43,7 @@
 <script>
     console.log("{{currentPosts}}");
     document.getElementById("postLike").addEventListener("click",  function(){ 
-        document.getElementById("postLike").src="static/images/heartFilled.png"
+        document.getElementById("postLike").src="https://wildtrekimages.theohal.repl.co/images/heartFilled.png"
     });
     document.getElementById("postComment").addEventListener("click",  function(){ 
         alert("Go to this post's page to see and post comments.")

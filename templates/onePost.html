@@ -8,7 +8,7 @@
 
 <div class="displayedPost">
     <div  id="postAuthorContainerID"  class="postAuthorContainer">
-        <img id="postAuthorPfp" src="static/images/profile.png">
+        <img id="postAuthorPfp" src="https://wildtrekimages.theohal.repl.co/images/profile.png">
         <div  id="postAuthorName">{{ currentOnePost.username }}</div>
     </div>
     <img id="postImage" src="{{ currentOnePost.image }}">
@@ -27,8 +27,8 @@
         {% if username != "join today" %}
         <div class="postButtons">
 
-            <img id="postLike" src="static/images/heartEmpty.png">
-            <img id="postComment" src="static/images/comment.png">
+            <img id="postLike" src="https://wildtrekimages.theohal.repl.co/images/heartEmpty.png">
+            <img id="postComment" src="https://wildtrekimages.theohal.repl.co/images/comment.png">
         </div>
         {% endif %}
         <ul class="comments">
@@ -51,7 +51,7 @@
         window.location.href = "/profile?username={{ currentOnePost.username }}";
     });
     document.getElementById("postLike").addEventListener("click",  function(){ 
-        document.getElementById("postLike").src="static/images/heartFilled.png"
+        document.getElementById("postLike").src="https://wildtrekimages.theohal.repl.co/images/heartFilled.png"
     });
 
     document.getElementById("postComment").addEventListener("click",  function(){ 
