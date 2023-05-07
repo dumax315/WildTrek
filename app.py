@@ -77,7 +77,7 @@ def signup():
             user_data = users.find_one({"username": username})
             new_username = user_data['username']
    
-            return redirect(url_for("home"))
+            return redirect(url_for("about"))
     return render_template('signup.html')
 
 @app.route("/login", methods=["POST", "GET"])
@@ -183,19 +183,15 @@ def signout():
 
 @app.route('/about')
 def about():
-    if "username" in session:
-        username = session["username"]
-        return render_template('about.html')
-    else:
-        return redirect(url_for("index"))
+
+    return render_template('about.html')
+
     
 @app.route('/ageConfirmation')
 def ageConfirmation():
-    if "username" in session:
-        username = session["username"]
-        return render_template("ageConfirmation.html")
-    else:
-        return redirect(url_for("index"))
+
+    return render_template("ageConfirmation.html")
+
     
 @app.route('/ageSubmit')
 def ageSubmit():
