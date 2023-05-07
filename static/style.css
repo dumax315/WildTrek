@@ -243,3 +243,80 @@ margin: auto;
     margin-top: 2em;
     margin-bottom: 1em;
 }
+
+
+/* code for feed pages */
+.feedHeader {
+    position: relative;
+}
+
+.feedHeader .wildTrekName {
+    margin: 0;
+    font-size: 50px;
+}
+
+.homeUsernameText {
+    position: absolute;
+    top: 0.4em;
+    right: 1em;
+    font-family: 'ubuntu';
+    color: #000000;
+}
+
+.displayedPost {
+    max-width: 650px;
+    margin: auto;
+    width: 80vw;
+}
+
+.postAuthorContainer {
+    background: #96BE8C;
+    width: 100%;
+    display: flex;
+    align-items: center;
+}
+
+img#postAuthorPfp {
+    margin: .8em;
+    max-width: 50px;
+    max-height: 50px;
+}
+
+div#postAuthorName {
+    font-family: 'ubuntu';
+    font-style: normal;
+    font-size: 35px;
+
+    color: #000000;
+    margin-left: .5em;
+}
+
+#postImage{
+    width: 100%;
+}
+
+.extraScrollSpace{
+    height: calc(78px);
+}
+
+#postLike{
+    background:url(./images/heartEmpty.png) no-repeat;
+    cursor:pointer;
+    border:none;
+    width:100px;
+    height:100px;
+}
+#postComment{
+    background:url(./images/comment.png) no-repeat;
+    cursor:pointer;
+    border:none;
+    width:100px;
+    height:100px;
+}
+
+@media screen and (max-width: 400px) {
+    .displayedPost {
+        width:100%;
+    }
+    
+}
