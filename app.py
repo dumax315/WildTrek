@@ -267,9 +267,14 @@ def post(id):
 
 #@app.route("/getposts", methods=["POST", "GET"])
 def getposts():
-    return list(posts.find({}))
+    return list(posts.find({}).sort('timestamp', pymongo.DESCENDING))
 
 print(getposts())
+
+@app.route("/onePost", methods=["POST", "GET"])
+def onePost():
+    pass
+
 
 def user_info(username):
     user_found = users.find_one({'username': username})
@@ -329,34 +334,40 @@ def get_shops(latitude, longitude):
 @app.route('/map')
 def map():
     # Get shops data from OpenStreetMap
-    shops = get_shops(47.654170, -122.302610)
+    mapPosts = getposts()
 
     # Initialize variables
-    id_counter = 0
     markers = ''
-    for node in shops.nodes:
-
-        # Create unique ID for each marker
-        idd = 'shop' + str(id_counter)
-        id_counter += 1
+    for node in mapPosts:
+    # node = mapPosts[0]
+    # Create unique ID for each marker
+        idd = "post"+str(node["_id"])
 
         # Check if shops have name and website in OSM
         try:
-            shop_brand = node.tags['brand']
+            image = node["image"]
         except:
-            shop_brand = 'null'
+            image = 'null'
 
         try:
-            shop_website = node.tags['website']
+            caption = node["caption"]
         except:
-            shop_website = 'null'
+            caption = 'null'
+
+        try:
+            lat = node["lat"]
+            lon = node["lon"]
+        except:
+            lat = 47.7606092 + (random.random()-.5)*.00001
+            lon = -122.188031+ (random.random()-.5)*.00001
 
         # Create the marker and its pop-up for each shop
         markers += "var {idd} = L.marker([{latitude}, {longitude}]);\
-                    {idd}.addTo(map).bindPopup('{brand}<br>{website}');".format(idd=idd, latitude=node.lat,\
-                                                                                longitude=node.lon,
-                                                                                brand=shop_brand,\
-                                                                                website=shop_website)
+                    {idd}.addTo(map).bindPopup(\'<a class=\"mapPost\" href=\"/onePost?id={idd}\"><img src={image}><div class=\"mapPostCaption\">{caption}</div></a>\');".format(idd=idd, latitude=lat,\
+                                                                                longitude=lon,\
+                                                                                image=image,\
+                                                                                caption=caption
+                                                                                )
 
     # Render the page with the map
     return render_template('map.html', markers=markers, lat=47.654170, lon=-122.302610)

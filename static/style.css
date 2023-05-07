@@ -355,6 +355,9 @@ a.sPostButton.rightPostButton {
     right:0px;
 }
 
+
+
+
 @media screen and (max-width: 400px) {
     .displayedPost {
         width:100%;
