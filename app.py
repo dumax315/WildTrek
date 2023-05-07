@@ -188,6 +188,7 @@ def upload():
     if "username" not in session:
         return redirect(url_for("index"))
     if request.method == "POST":
+        print('POSt Request for upload received')
         image = request.files['img']
         image.seek(0)
         image_bytes = image.read()
@@ -217,11 +218,17 @@ def upload():
         fileLocation='http://' + os.getenv('S3_BUCKET_NAME') + '.s3.amazonaws.com/' + image.filename
 
         caption = request.form.get("caption")
-        hashtags = request.form.getlist("hashtags")
 
-        suggestions = identify(image_bytes)
-        plant_suggestions = suggestions if len(suggestions) > 0 else ['N/A']
+        hashtags = request.form.getlist('hashtags')
+        # print(request.form)
+        # print(request.form.getlist('hashtags'))
+        plant_suggestions = []
+        if("wild_plants" in hashtags or "garden_plants" in hashtags):
 
+            suggestions = identify(image_bytes)
+            plant_suggestions = suggestions if len(suggestions) > 0 else ['N/A']
+        
+        # plant_suggestions = []
         post_input = {'_id': id,
                       'timestamp': datetime.datetime.utcnow(),
                       'username':session['username'], 

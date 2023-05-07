@@ -1,4 +1,4 @@
-{% extends "base.html" %}
+{% extends "baseWithNav.html" %}
 {% block title %}upload post{% endblock %}
 
 {% block head %}
@@ -8,7 +8,7 @@
 {% endblock %}
 
 {% block content %}
-<form method="post" action="{{url_for('upload')}}" enctype="multipart/form-data">
+<form class="signInUpForm" method="post" action="{{url_for('upload')}}" enctype="multipart/form-data">
 <div class="uploadPage">
     <div class="wildTrekName">WildTrek</div>
 </div>
@@ -19,31 +19,48 @@
 </div>
 
 <div class="upload-btn-wrapper">
-    <button class="btn">
-      <img class="uploadIcon" src="https://cdn.discordapp.com/attachments/1104152958695903322/1104162735295569960/852251_upload_512x512.png"><div>Take or upload photo</div></button>
-    <input type="file" id="img" name="img" accept="image/*">
+      <img class="uploadIcon" src="https://cdn.discordapp.com/attachments/1104152958695903322/1104162735295569960/852251_upload_512x512.png"><div>Take or upload photo</div>
+    <input required type="file" id="img" name="img" accept="image/*">
   </div>
 
 
 
   <label>Add a caption</label>
     <div>
-        <input type="text" id="caption" name="caption">
+        <input required type="text" id="caption" name="caption">
     </div>
     
     <label>Add hashtags</label>
-    <div>
-        <select name="hashtags" id="hashtags" multiple>
-            <option value="wild_plants">wild plants</option>
-            <option value="garden_plants">garden plants</option>
-            <option value="animals">animals</option>
-            <option value="sky">sky</option>
-            <option value="landscape">landscape</option>
-            <option value="other">other</option>
-          </select>
+    <div class="checkBoxes">
+        <label class="container">wild plants
+        <input type="checkbox" name="hashtags" value="wild_plants">
+        <span class="checkmark"></span>
+        </label>
+        <label class="container">garden plants
+        <input type="checkbox" name="hashtags" value="garden_plants">
+        <span class="checkmark"></span>
+        </label>
+        <label class="container" >sky
+        <input type="checkbox" name="hashtags" value="sky">
+        <span class="checkmark" ></span>
+        </label>
+        <label class="container">animals
+        <input type="checkbox" name="hashtags" value="animals">
+        <span class="checkmark"></span>
+        </label>
+        <label class="container">landscape
+        <input type="checkbox" name="hashtags" value="landscape">
+        <span class="checkmark"></span>
+        </label>
+        <label class="container">other
+        <input type="checkbox" name="hashtags" value="other">
+        <span class="checkmark"></span>
+        </label>
     </div>
     <div>
-        <button type="submit">Post</button>
+        <button class="signInUpSubmit" type="submit">Post</button>
     </div>
 </form>
 {% endblock %}
+
+{% block upload %}"active"{% endblock %}

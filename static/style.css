@@ -24,7 +24,7 @@ img.topBorderImage {
     text-align: center;
 }
 
-img.bottomBorderImagew {
+img.bottomBorderImage {
     width: 800px;
     right: 50%;
     transform: translate(50%,0%);
