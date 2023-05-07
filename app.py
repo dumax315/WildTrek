@@ -31,7 +31,7 @@ posts = db.post
 @app.route("/")
 def index():
     if "username" in session:
-        return redirect(url_for("logged_in"))
+        return redirect(url_for("home"))
     print('Request for signup received')
     return render_template('index.html')
 

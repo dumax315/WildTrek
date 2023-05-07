@@ -1,19 +1,36 @@
-<!doctype html>
+{% extends "base.html" %}
+{% block title %}upload post{% endblock %}
 
-<head>
-    <title>Upload</title>
-</head>
-<html>
+{% block head %}
+    <!--Our CSS-->
+    <link rel="stylesheet" href="static/AScss.css">
+    
+{% endblock %}
 
+{% block content %}
 <form method="post" action="{{url_for('upload')}}" enctype="multipart/form-data">
-    <label for="img">Select image:</label>
-    <div>
-        <input type="file" id="img" name="img" accept="image/*">
-    </div>
-    <label>Add a caption</label>
+<div class="uploadPage">
+    <div class="wildTrekName">WildTrek</div>
+</div>
+
+<div class="bannerInfoColor">
+    <label>Upload a picture of nature, plants, 
+            or animals to share with friends.</label>
+</div>
+
+<div class="upload-btn-wrapper">
+    <button class="btn">
+      <img class="uploadIcon" src="https://cdn.discordapp.com/attachments/1104152958695903322/1104162735295569960/852251_upload_512x512.png"><div>Take or upload photo</div></button>
+    <input type="file" id="img" name="img" accept="image/*">
+  </div>
+
+
+
+  <label>Add a caption</label>
     <div>
         <input type="text" id="caption" name="caption">
     </div>
+    
     <label>Add hashtags</label>
     <div>
         <select name="hashtags" id="hashtags" multiple>
@@ -29,5 +46,4 @@
         <button type="submit">Post</button>
     </div>
 </form>
-
-</html>
+{% endblock %}

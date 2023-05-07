@@ -1,0 +1,65 @@
+body{
+    margin:0px;
+    background-color: #EEE8EC;
+}
+
+.uploadPage .wildTrekName {
+    /* font-family: 'Sunflower'; */
+    /* font-style: normal; */
+    /* font-weight: 500; */
+    /* font-size: 64px; */
+    /* line-height: 80px; */
+    /* text-align: center; */
+    /* color: #734128; */
+    margin-top: 1.5em;
+    font-size:45px;
+    padding:0px;
+    line-height: initial;
+}
+
+.bannerInfoColor {
+    background: #A0C497;
+    border-radius: 1px;
+    width: 70vw;
+    font-size: x-large;
+    padding: 0.25em;
+    font-size: 30px;
+    display: block;
+    margin: auto;
+    text-align: center;
+    color:#000000;
+}
+
+.formatForCaption{
+    background: rgba(217, 217, 217, 0.4)
+}
+
+.upload-btn-wrapper {
+    position: relative;
+    overflow: hidden;
+    display: inline-block;
+}
+
+
+.btn {
+    border: 2px solid gray;
+    color: gray;
+    background-color: white;
+    padding: 8px 20px;
+    border-radius: 8px;
+    font-size: 20px;
+    font-weight: bold;
+    text-align: center;
+}
+  
+.upload-btn-wrapper input[type=file] {
+    font-size: 100px;
+    position: absolute;
+    left: 0;
+    top: 0;
+    opacity: 0;
+}
+
+.uploadIcon {
+    width:40px;
+}

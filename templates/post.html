@@ -1,14 +1,18 @@
+{% extends "base.html" %}
+{% block title %}post{% endblock %}
 
-<!DOCTYPE HTML>
-<html> 
-<body>
-    <p>{{message}}</p>
-    <img id="ItemPreview" src={{message}}>
+{% block head %}
+    <!--Our CSS-->
+    <link rel="stylesheet" href="static/mapStyle.css">
     
-    <script type="text/javascript">
-        document.getElementById("ItemPreview").src = message;
-        console.log(document.getElementById("ItemPreview").src)
-    </script>
-</body>
+{% endblock %}
 
-</html>
+{% block content %}
+<p>{{message}}</p>
+<img id="ItemPreview" src={{message}}>
+
+<script type="text/javascript">
+    document.getElementById("ItemPreview").src = message;
+    console.log(document.getElementById("ItemPreview").src)
+</script>
+{% endblock %}
