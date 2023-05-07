@@ -1,5 +1,7 @@
 # WildTrek
 
+A pwa that motivates you to get outside, explore the wilderness, and learn more about the nature all around you. It allows users to upload pictures and if you are 13+, you can share them with people around you.
+
 - Goals of the project: 
 Create a functioning prototype of a pwa where users can upload pictures on their account, view others (if 13+), and learn more about the environment.
 Desired user experience: Have the users be able to interact with the functions we implemented in the basic web app. Have them create an account, upload pictures, and view location information.
