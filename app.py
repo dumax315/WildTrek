@@ -358,6 +358,7 @@ def map():
             lat = node["lat"]
             lon = node["lon"]
         except:
+            print("no lat")
             lat = 47.7606092 + (random.random()-.5)*.00001
             lon = -122.188031+ (random.random()-.5)*.00001
 

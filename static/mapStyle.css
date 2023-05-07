@@ -7,5 +7,9 @@
 .leaflet-popup-content {
     width: 200px;
     height: 300px;
-    overflow-y: scroll;
+    /* overflow-y: scroll; */
+}
+
+.mapPost img{
+    width: 100%;
 }
