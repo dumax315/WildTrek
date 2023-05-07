@@ -300,12 +300,12 @@ div#postAuthorName {
 }
 
 #postLike{
-    background:url(./images/heartEmpty.png) no-repeat;
-    cursor:pointer;
-    border:none;
-    width:100px;
-    height:100px;
-}
+    background: url('./images/comment.png') no-repeat;
+    cursor: pointer;
+    width: 70px;
+    height: 70px;
+    border: none;
+  }
 #postComment{
     background:url(./images/comment.png) no-repeat;
     cursor:pointer;
