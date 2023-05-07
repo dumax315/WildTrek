@@ -258,7 +258,7 @@ margin: auto;
 .homeUsernameText {
     position: absolute;
     top: 0.4em;
-    right: 1em;
+    right: 2em;
     font-family: 'ubuntu';
     color: #000000;
 }
