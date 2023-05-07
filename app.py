@@ -356,7 +356,7 @@ def user_info(username):
             info['profile_picture'] = user_found['profile_picture']
             info['bio'] = user_found['bio']
         except:
-            info['profile_picture'] = "./https://wildtrekimages.theohal.repl.co/images/profile.png"
+            info['profile_picture'] = "https://wildtrekimages.theohal.repl.co/images/profile.png"
             info['bio'] = "No Bio Yet"
         info['posts'] = user_found['posts']
     return info
