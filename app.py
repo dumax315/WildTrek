@@ -91,8 +91,9 @@ def login():
 @app.route('/home')
 def home():
     if "username" in session:
+        currentPosts = getposts()
         username = session["username"]
-        return render_template('home.html', username=username)
+        return render_template('home.html', username=username, currentPosts=currentPosts)
     else:
         return redirect(url_for("index"))
 
@@ -202,8 +203,9 @@ def post(id):
     return {}
 
 #@app.route("/posts", methods=["POST", "GET"])
-def posts():
+def getposts():
     return list(posts.find({}))
+
 
 def user_info(username):
     user_found = users.find_one({'username': username})

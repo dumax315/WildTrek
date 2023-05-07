@@ -1,11 +1,45 @@
-<p>You are logged in as {{username}}</p>
-<form method="get" action="{{url_for('upload')}}">
-    <div>
-        <button type="submit">Make a post</button>
+{% extends "baseWithNav.html" %}
+{% block title %}Feed{% endblock %}
+
+{% block content %}
+<div class="feedHeader">
+    <div class="wildTrekName">Wildtrek</div>
+    <div class="homeUsernameText">Welcome back {{username}}</div>
+</div>
+<div class="displayedPost">
+    <div class="postAuthorContainer">
+        <img id="postAuthorPfp" src="static/images/profile.png">
+        <div id="postAuthorName">JaneDoe</div>
     </div>
-</form>
-<form method="get" action="{{url_for('signout')}}">
-    <div>
-        <button type="submit">Log Out</button>
+    <img id="postImage" src="static/images/testImage.png">
+    <div class="imageInfoBox">
+        <div id="postCaption">Caption Caption Caption</div>
+        <div id="tags">
+            <ul class="tags">
+                <li>Nature</li>
+                <li>animal</li>
+                <li>Landscape</li>
+              </ul>
+        </div>
+        <div class="postButtons">
+            <img id="postLike" src="static/images/heartEmpty.png">
+            <img id="postComment" src="static/images/comment.png">
+        </div>
     </div>
-</form>
+</div>
+{% for post in currentPosts %}
+    <div class="loadedposts">
+        <img src="{{ post.image }}">
+        {{ post.caption }}
+    </div>
+{% endfor %}
+
+
+<div class="extraScrollSpace"></div>
+<script>
+    console.log("{{currentPosts}}");
+</script>
+{% endblock %}
+
+
+{% block home %}"active"{% endblock %}
