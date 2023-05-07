@@ -90,7 +90,7 @@ def login():
                 return render_template('login.html')
         else:
             return render_template('login.html')
-    return redirect(url_for("home"))
+    return render_template('login.html')
 
 @app.route('/home')
 def home():
@@ -129,6 +129,9 @@ def onePost():
         currentOnePost = post(idStr[4:])
     else:
         currentOnePost = post(idStr)
+
+    if(currentOnePost == None):
+        return render_template('error.html', message='Post not found')
     return render_template('onePost.html', username=username, currentOnePost=currentOnePost)
 
 @app.route("/signout")
@@ -351,7 +354,8 @@ def comment():
             if(args.get("id") == None):
                 return redirect(url_for("home"))
             id = args.get("id")
-            comment = session['username'] + ': ' + request.form.get("comment")
+            print(request.json)
+            comment = session['username'] + ': ' + request.json["comment"]
             post_found = posts.find_one({"_id": id}) 
             if post_found:
                 posts.find_one_and_update({"_id": id}, {'$push': {'comments': comment}})

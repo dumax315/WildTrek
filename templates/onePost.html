@@ -25,11 +25,13 @@
                 {% endfor %}
               </ul>
         </div>
+        {% if username != "join today" %}
         <div class="postButtons">
+
             <img id="postLike" src="static/images/heartEmpty.png">
             <img id="postComment" src="static/images/comment.png">
         </div>
-        
+        {% endif %}
         <ul class="comments">
             <div>Comments</div>
         {% for tag in currentOnePost.comments %}
@@ -50,10 +52,23 @@
     });
 
     document.getElementById("postComment").addEventListener("click",  function(){ 
-        
+        let comment = prompt("Please enter comment");
+        (async () => {
+            const rawResponse = await fetch('/comment?id={{ currentOnePost["_id"] }}', {
+              method: 'POST',
+              headers: {
+                'Accept': 'application/json',
+                'Content-Type': 'application/json'
+              },
+              body: JSON.stringify({comment: comment})
+            });
+            const content = await rawResponse.json();
+          
+            console.log(content);
+          })();
     });
 </script>
 {% endblock %}
 
 
-{% block home %}"active"{% endblock %}
+{% block friends %}"active"{% endblock %}

@@ -7,7 +7,7 @@
     <div class="homeUsernameText">Welcome back {{username}}</div>
 </div>
 
-<div class="displayedPost">
+<div id="disPost" class="displayedPost">
     {% if index != 0 %}
         <a class="sPostButton leftPostButton" href="/home?index={{index-1}}">&lt;</a>
     {% endif %}
@@ -16,6 +16,7 @@
         <img id="postAuthorPfp" src="static/images/profile.png">
         <div id="postAuthorName">{{ currentPosts[index].username }}</div>
     </div>
+
     <img id="postImage" src="{{ currentPosts[index].image }}">
     <div class="imageInfoBox">
         <div id="postCaption">{{ currentPosts[index].caption }}</div>
@@ -27,7 +28,7 @@
                 {% for tag in currentPosts[index].plant_suggestions %}
                     <li>AI: {{tag}}</li>
                 {% endfor %}
-              </ul>
+            </ul>
         </div>
         <div class="postButtons">
             <img id="postLike" src="static/images/heartEmpty.png">
@@ -44,6 +45,14 @@
     document.getElementById("postLike").addEventListener("click",  function(){ 
         document.getElementById("postLike").src="static/images/heartFilled.png"
     });
+    document.getElementById("postComment").addEventListener("click",  function(){ 
+        alert("Go to this post's page to see and post comments.")
+    });
+
+    document.getElementById("disPost").addEventListener("click",  function(){ 
+        window.location.href = "/onePost?id={{ currentPosts[index]['_id'] }}";
+    });
+
 </script>
 {% endblock %}
 

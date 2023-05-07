@@ -24,7 +24,7 @@ img.topBorderImage {
     text-align: center;
 }
 
-img.bottomBorderImage {
+img.bottomBorderImagew {
     width: 800px;
     right: 50%;
     transform: translate(50%,0%);
@@ -68,7 +68,6 @@ img.bottomBorderImage {
 
 }
 .largeButtons .signup {
-
     margin-top: 1em;
 }
 .signup:hover {
@@ -258,7 +257,7 @@ margin: auto;
 .homeUsernameText {
     position: absolute;
     top: 0.4em;
-    right: 1em;
+    right: 2em;
     font-family: 'ubuntu';
     color: #000000;
 }
@@ -385,4 +384,14 @@ ul.comments {
 span.comName {
     font-size: 20px;
     font-family: ubuntu;
+}
+
+div#postCaption {
+    font-family: 'ubuntu';
+    font-style: normal;
+    font-weight: 500;
+    font-size: 35px;
+    /* line-height: 44px; */
+    /* text-align: center; */
+    color: #535865;
 }
