@@ -94,11 +94,20 @@ def login():
 
 @app.route('/home')
 def home():
+    args = request.args
+    print(args.get("index"))
     if "username" in session:
         currentPosts = getposts()
-        print(currentPosts)
+        # print(currentPosts)
         username = session["username"]
-        return render_template('home.html', username=username, currentPosts=currentPosts)
+        index=0
+        if(args.get("index") != None):
+            try:
+                index =  int(args.get("index"))
+            except:
+                print("werird index")
+
+        return render_template('home.html', username=username, currentPosts=currentPosts, index=index)
     else:
         return redirect(url_for("index"))
 
@@ -258,7 +267,9 @@ def post(id):
 
 #@app.route("/getposts", methods=["POST", "GET"])
 def getposts():
-    return list(posts.find({}).sort({'timestamp': -1}))
+    return list(posts.find({}))
+
+print(getposts())
 
 def user_info(username):
     user_found = users.find_one({'username': username})
