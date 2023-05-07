@@ -12,8 +12,11 @@ import uuid
 import boto3, botocore
 import random
 import datetime
-#import PIL
-from exif import Image
+import io
+
+import getGeo
+
+# from exif import Image
 
 app = Flask(__name__)
 
@@ -32,6 +35,7 @@ client = pymongo.MongoClient(uri)
 db = client.get_database('wildtrekDB')
 users = db.user
 posts = db.post
+
 
 
 @app.route("/")
@@ -182,6 +186,8 @@ def hello():
        print('Request for hello page received with no name or blank name -- redirecting')
        return redirect(url_for('index'))
 
+
+
 @app.route("/upload", methods=["POST", "GET"])
 def upload():
     print('Request for upload received')
@@ -192,20 +198,36 @@ def upload():
         image = request.files['img']
         image.seek(0)
         image_bytes = image.read()
-        exif_img = Image(image)
 
-        #Extract coordinates of the taken image
+        # exif_img = Image(image)
+        # #Extract coordinates of the taken image
         coordinates = []
-        if(exif_img.has_exif):
-            try:
-                gps_latitude =exif_img.gps_latitude
-                gps_longitude = exif_img.gps_longitude
-                gps_latitude_ref = exif_img.gps_latitude_ref
-                gps_longitude_ref = exif_img.gps_longitude_ref
-                if gps_latitude and gps_longitude and gps_latitude_ref and gps_longitude_ref:
-                    coordinates = convert_coordinates(gps_latitude, gps_longitude, gps_latitude_ref, gps_longitude_ref)
-            except Exception as e:
-                print(e)
+        # print(exif_img.has_exif)
+        # if(exif_img.has_exif):
+        #     try:
+        #         gps_latitude =exif_img.gps_latitude
+        #         gps_longitude = exif_img.gps_longitude
+        #         print(gps_latitude)
+        #         print(gps_longitude)
+        #         gps_latitude_ref = exif_img.gps_latitude_ref
+        #         gps_longitude_ref = exif_img.gps_longitude_ref
+        #         print(gps_latitude_ref)
+        #         print(gps_longitude_ref)
+        #         if gps_latitude and gps_longitude and gps_latitude_ref and gps_longitude_ref:
+        #             coordinates = convert_coordinates(gps_latitude, gps_longitude, gps_latitude_ref, gps_longitude_ref)
+        #     except Exception as e:
+        #         print(e)
+
+        # print(coordinates)
+        try:
+            photoCO = getGeo.geoGetter(io.BytesIO(image_bytes))
+            print(photoCO)
+            coordinates.append(photoCO[0])
+            coordinates.append(photoCO[1])
+        except Exception as e:
+            print(e)
+        print(coordinates)
+        print(len(coordinates))
         if len(coordinates) != 2:
             rand_lat = random.uniform(-0.1, 0.1)
             rand_lon = random.uniform(-0.1, 0.1)
@@ -244,7 +266,7 @@ def upload():
         }
         posts.insert_one(post_input)
         users.find_one_and_update({'username':session['username']}, {'$push': {'posts': post_input}})
-
+        return redirect(url_for('home'))
     return render_template('upload.html')
 
 def upload_file_to_s3(file, bucket_name, acl="public-read"):
@@ -271,17 +293,7 @@ def upload_file_to_s3(file, bucket_name, acl="public-read"):
     #     return e
     # return "{}{}".format(app.config["S3_LOCATION"], file.filename)
 
-def convert_coordinates(gps_latitude, gps_longitude, gps_latitude_ref, gps_longitude_ref):
-    # Convert GPS latitude to decimal degrees
-    gps_latitude_decimal = gps_latitude[0] + (gps_latitude[1] / 60) + (gps_latitude[2] / 3600)
-    if gps_latitude_ref in ['S', 'W']:
-        gps_latitude_decimal = -gps_latitude_decimal
-    # Convert GPS longitude to decimal degrees
-    gps_longitude_decimal = gps_longitude[0] + (gps_longitude[1] / 60) + (gps_longitude[2] / 3600)
-    if gps_longitude_ref in ['S', 'W']:
-        gps_longitude_decimal = -gps_longitude_decimal
 
-    return [gps_latitude_decimal, gps_longitude_decimal]
 
 
 #@app.route("/post", methods=["POST", "GET"])
@@ -436,8 +448,8 @@ def map():
             caption = 'null'
 
         try:
-            lat = node["lat"]
-            lon = node["lon"]
+            lat = node["lat"]+ (random.random()-.5)*.001
+            lon = node["lon"]+ (random.random()-.5)*.001
         except:
             print("no lat")
             lat = 47.7606092 + (random.random()-.5)*.00001
