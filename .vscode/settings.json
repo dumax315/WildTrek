@@ -1,0 +1,4 @@
+{
+    "appService.defaultWebAppToDeploy": "/subscriptions/82121b2a-327e-44fa-96a2-d77b946114a9/resourceGroups/WildtrekUWBhackathon_group-beee/providers/Microsoft.Web/sites/WildtrekUWBhackathon",
+    "appService.deploySubpath": "."
+}

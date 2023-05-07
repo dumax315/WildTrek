@@ -16,6 +16,11 @@ import io
 
 import getGeo
 
+# import
+# from logging import StreamHandler
+
+
+
 # from exif import Image
 
 app = Flask(__name__)
@@ -35,6 +40,12 @@ client = pymongo.MongoClient(uri)
 db = client.get_database('wildtrekDB')
 users = db.user
 posts = db.post
+
+# keep stdout/stderr logging using StreamHandler
+# streamHandler = StreamHandler()
+# app.logger.addHandler(streamHandler)
+
+# appl(logging.Formatter('[FLASK-SAMPLE][%(levelname)s]%(message)s'))
 
 
 
