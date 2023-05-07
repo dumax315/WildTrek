@@ -319,15 +319,20 @@ div#postAuthorName {
 ul.tags {
     list-style-type: none;
     display: flex;
-    max-width: 351px;
+    max-width: 492px;
     width: 100%;
     justify-content: space-between;
+    flex: wra;
+    flex-wrap: wrap;
+    padding: 0px;
+    /* margin-bottom: 1em; */
 }
 
 .tags li {
     background: #96BE8C;
     padding: .5em;
     border-radius: .5em;
+    margin-bottom: 1em;
 }
 
 a.sPostButton {
@@ -363,4 +368,21 @@ a.sPostButton.rightPostButton {
         width:100%;
     }
     
+}
+
+
+/* style of one post */
+
+ul.comments {
+    background: #A0c497;
+    /* padding: 2em; */
+    padding-top: 1em;
+    font-family: ubuntu;
+    padding-bottom: 1em;
+    border-radius: 1em;
+}
+
+span.comName {
+    font-size: 20px;
+    font-family: ubuntu;
 }

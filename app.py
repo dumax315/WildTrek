@@ -62,7 +62,7 @@ def signup():
             user_data = users.find_one({"username": username})
             new_username = user_data['username']
    
-            return render_template('home.html', username=new_username)
+            return redirect(url_for("home"))
     return render_template('signup.html')
 
 @app.route("/login", methods=["POST", "GET"])
@@ -90,7 +90,7 @@ def login():
                 return render_template('login.html')
         else:
             return render_template('login.html')
-    return render_template('login.html')
+    return redirect(url_for("home"))
 
 @app.route('/home')
 def home():
@@ -110,6 +110,26 @@ def home():
         return render_template('home.html', username=username, currentPosts=currentPosts, index=index)
     else:
         return redirect(url_for("index"))
+
+
+@app.route("/onePost", methods=["GET"])
+def onePost():
+    args = request.args
+    print(args.get("id"))
+   
+    if(args.get("id") == None):
+        return redirect(url_for("index"))
+    idStr = args.get("id")
+    if "username" in session:
+
+        username = session["username"]
+    else:
+        username ="join today"
+    if(idStr[:4] == "post"):
+        currentOnePost = post(idStr[4:])
+    else:
+        currentOnePost = post(idStr)
+    return render_template('onePost.html', username=username, currentOnePost=currentOnePost)
 
 @app.route("/signout")
 def signout():
@@ -261,6 +281,7 @@ def post(id):
         print('Post Found')
         #encoded = base64.b64encode(post_found['image'])
         #return render_template('post.html', message=post_found['image'])
+        print(post_found)
         return post_found
     print('Post Not Found')
     return None
@@ -271,9 +292,6 @@ def getposts():
 
 print(getposts())
 
-@app.route("/onePost", methods=["POST", "GET"])
-def onePost():
-    pass
 
 
 def user_info(username):

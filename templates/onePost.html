@@ -1,0 +1,59 @@
+{% extends "baseWithNav.html" %}
+{% block title %}Feed{% endblock %}
+
+{% block content %}
+<div class="feedHeader">
+    <div class="wildTrekName">Wildtrek</div>
+    <div class="homeUsernameText">Welcome back {{username}}</div>
+</div>
+
+<div class="displayedPost">
+    <div class="postAuthorContainer">
+        <img id="postAuthorPfp" src="static/images/profile.png">
+        <div id="postAuthorName">{{ currentOnePost.username }}</div>
+    </div>
+    <img id="postImage" src="{{ currentOnePost.image }}">
+    <div class="imageInfoBox">
+        <div id="postCaption">{{ currentOnePost.caption }}</div>
+        <div id="tags">
+            <ul class="tags">
+                {% for tag in currentOnePost.hashtags %}
+                    <li>{{tag}}</li>
+                {% endfor %}
+                {% for tag in currentOnePost.plant_suggestions %}
+                    <li>AI: {{tag}}</li>
+                {% endfor %}
+              </ul>
+        </div>
+        <div class="postButtons">
+            <img id="postLike" src="static/images/heartEmpty.png">
+            <img id="postComment" src="static/images/comment.png">
+        </div>
+        
+        <ul class="comments">
+            <div>Comments</div>
+        {% for tag in currentOnePost.comments %}
+            <li><span class="comName">{{tag.split(":")[0]}}</span><span class="comText">{{tag.split(":")[1]}}</span></li>
+        {% endfor %}
+        </ul>
+    </div>
+    
+</div>
+
+
+
+<div class="extraScrollSpace"></div>
+<script>
+    console.log("{{currentPosts}}");
+    document.getElementById("postLike").addEventListener("click",  function(){ 
+        document.getElementById("postLike").src="static/images/heartFilled.png"
+    });
+
+    document.getElementById("postComment").addEventListener("click",  function(){ 
+        
+    });
+</script>
+{% endblock %}
+
+
+{% block home %}"active"{% endblock %}
