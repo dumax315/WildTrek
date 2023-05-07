@@ -314,6 +314,20 @@ div#postAuthorName {
     height:100px;
 }
 
+ul.tags {
+    list-style-type: none;
+    display: flex;
+    max-width: 351px;
+    width: 100%;
+    justify-content: space-between;
+}
+
+.tags li {
+    background: #96BE8C;
+    padding: .5em;
+    border-radius: .5em;
+}
+
 @media screen and (max-width: 400px) {
     .displayedPost {
         width:100%;
