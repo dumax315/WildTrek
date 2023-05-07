@@ -276,7 +276,7 @@ def convert_coordinates(gps_latitude, gps_longitude, gps_latitude_ref, gps_longi
 
 #@app.route("/post", methods=["POST", "GET"])
 def post(id):
-    post_found = posts.find_one({"post_id": id}) #have two ids(_id and post_id), using post_id for now
+    post_found = posts.find_one({"_id": id}) 
     if post_found:
         print('Post Found')
         #encoded = base64.b64encode(post_found['image'])
@@ -304,6 +304,58 @@ def user_info(username):
         info['posts'] = user_found['posts']
     return info
 
+@app.route("/updatebio", methods=["POST"])
+def update_bio():
+    if 'username' in session:
+        try:
+            text = request.form.get("bio")
+            users.find_one_and_update({'username': session['username']}, {'$set': {'bio': text}})
+        except Exception as e:
+            print(e)
+    return redirect(url_for('home'))
+
+@app.route("/updateprofilepicture", methods=["POST"])
+def update_profile_picture():
+    if 'username' in session:
+        try:
+            image = request.files['img']
+            image.filename = session['username'] + 'profile'
+            upload_file_to_s3(image, app.config["S3_BUCKET"])
+            fileLocation='http://' + os.getenv('S3_BUCKET_NAME') + '.s3.amazonaws.com/' + image.filename
+            users.find_one_and_update({'username': session['username']}, {'$set': {'profile_picture': fileLocation}})
+        except Exception as e:
+            print(e)
+    return redirect(url_for('home'))
+
+@app.route("/like", methods=["POST"])
+def like():
+    if 'username' in session:
+        try:
+            args = request.args
+            id = args.get("id")
+            post_found = posts.find_one({"_id": id}) 
+            if post_found:
+                if session['username'] in post_found['liked_users']:
+                    posts.find_one_and_update({"_id": id}, {'$inc': {'likes': -1}, '$pull': { 'liked_users': { '$in': [session['username']]}}})
+                else:
+                    posts.find_one_and_update({"_id": id}, {'$inc': {'likes': 1}, '$push': {'liked_users': session['username']}})
+        except Exception as e:
+            print(e)
+    return redirect(url_for('home'))
+
+@app.route("/comment", methods=["POST"])
+def comment():
+    if 'username' in session:
+        try:
+            args = request.args
+            id = args.get("id")
+            comment = session['username'] + ': ' + request.form.get("comment")
+            post_found = posts.find_one({"_id": id}) 
+            if post_found:
+                posts.find_one_and_update({"_id": id}, {'$push': {'comments': comment}})
+        except Exception as e:
+            print(e)
+    return redirect(url_for('home'))
 
 def identify(image_bytes):
     print('Identifying image')
