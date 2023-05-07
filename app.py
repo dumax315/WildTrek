@@ -138,6 +138,33 @@ def onePost():
         return render_template('error.html', message='Post not found')
     return render_template('onePost.html', username=username, currentOnePost=currentOnePost)
 
+
+
+@app.route("/profile", methods=["GET"])
+def profile():
+    args = request.args
+    print(args.get("username"))
+
+    usernameToLoad = ''
+   
+    if(args.get("username") == None):
+        usernameToLoad = session["username"]
+    else:
+        usernameToLoad = args.get("username")
+
+    if "username" in session:
+
+        username = session["username"]
+    else:
+        username ="join today"
+
+    loadedProfile = user_info(usernameToLoad)
+    if(loadedProfile == None or loadedProfile =={}):
+        return render_template('error.html', message='User not found')
+    return render_template('profile.html', username=username, loadedProfile=loadedProfile)
+
+
+
 @app.route("/signout")
 def signout():
     session.clear()
@@ -318,8 +345,12 @@ def user_info(username):
     if user_found:
         info = {}
         info['username'] = user_found['username']
-        info['profile_picture'] = user_found['profile_picture']
-        info['bio'] = user_found['bio']
+        try:
+            info['profile_picture'] = user_found['profile_picture']
+            info['bio'] = user_found['bio']
+        except:
+            info['profile_picture'] = "./static/images/profile.png"
+            info['bio'] = "No Bio Yet"
         info['posts'] = user_found['posts']
     return info
 

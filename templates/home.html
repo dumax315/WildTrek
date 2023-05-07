@@ -12,9 +12,9 @@
         <a class="sPostButton leftPostButton" href="/home?index={{index-1}}">&lt;</a>
     {% endif %}
     <a class="sPostButton rightPostButton" href="/home?index={{index+1}}">&gt;</a>
-    <div class="postAuthorContainer">
+    <div id="postAuthorContainerID" class="postAuthorContainer">
         <img id="postAuthorPfp" src="static/images/profile.png">
-        <div id="postAuthorName">{{ currentPosts[index].username }}</div>
+        <div id="postAuthorName" >{{ currentPosts[index].username }}</div>
     </div>
 
     <img id="postImage" src="{{ currentPosts[index].image }}">
@@ -49,9 +49,14 @@
         alert("Go to this post's page to see and post comments.")
     });
 
-    document.getElementById("disPost").addEventListener("click",  function(){ 
+    document.getElementById("postImage").addEventListener("click",  function(){ 
         window.location.href = "/onePost?id={{ currentPosts[index]['_id'] }}";
     });
+
+    document.getElementById("postAuthorContainerID").addEventListener("click",  function(){ 
+        window.location.href = "/profile?username={{ currentPosts[index].username }}";
+    });
+    
 
 </script>
 {% endblock %}

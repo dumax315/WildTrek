@@ -1,0 +1,31 @@
+{% extends "baseWithNav.html" %}
+{% block title %}{{ loadedProfile.username }}{% endblock %}
+{% block content %}
+<div class="feedHeader">
+    <div class="wildTrekName">Wildtrek</div>
+    <div class="homeUsernameText">Welcome back {{username}}</div>
+    <a href="./signout" class="homeUsernameText">Sign out</a>
+</div>
+<div class="displayedPost">
+    <div class="postAuthorContainer">
+        <img id="postAuthorPfp" src="{{loadedProfile.profile_picture}}">
+        <div id="postAuthorName">{{ loadedProfile.username }}</div>
+    </div>
+    <div class="userProfilePostsContainer">
+    {% for post in loadedProfile.posts %}
+        <a class="userProfilePosts" href="/onePost?id={{ post['_id'] }}">
+            <img src="{{ post.image }}">
+        </a>
+    {% endfor %}
+    </div>
+</div>
+
+<div class="extraScrollSpace"></div>
+<script>
+    console.log("{{loadedProfile}}");
+    
+</script>
+{% endblock %}
+
+
+{% block friends %}"active"{% endblock %}

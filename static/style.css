@@ -395,3 +395,38 @@ div#postCaption {
     /* text-align: center; */
     color: #535865;
 }
+
+
+
+/* style for Profile */
+
+a.homeUsernameText {
+    top: 2em;
+}
+
+
+.userProfilePostsContainer {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: space-between;
+    row-gap: 10px;
+    /* gap: 10px; */
+}
+
+a.userProfilePosts {
+    width: 30%;
+    outline: 2px solid #629460;
+}
+
+img {}
+
+.userProfilePosts img {
+    width: 100%;
+    /* margin-bottom: 8px; */
+}
+
+
+
+.postAuthorContainer:hover {
+    background:#3e603d;
+}

@@ -7,9 +7,9 @@
 </div>
 
 <div class="displayedPost">
-    <div class="postAuthorContainer">
+    <div  id="postAuthorContainerID"  class="postAuthorContainer">
         <img id="postAuthorPfp" src="static/images/profile.png">
-        <div id="postAuthorName">{{ currentOnePost.username }}</div>
+        <div  id="postAuthorName">{{ currentOnePost.username }}</div>
     </div>
     <img id="postImage" src="{{ currentOnePost.image }}">
     <div class="imageInfoBox">
@@ -46,6 +46,10 @@
 <div class="extraScrollSpace"></div>
 <script>
     console.log("{{currentPosts}}");
+
+    document.getElementById("postAuthorContainerID").addEventListener("click",  function(){ 
+        window.location.href = "/profile?username={{ currentOnePost.username }}";
+    });
     document.getElementById("postLike").addEventListener("click",  function(){ 
         document.getElementById("postLike").src="static/images/heartFilled.png"
     });
