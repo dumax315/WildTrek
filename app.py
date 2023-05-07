@@ -96,6 +96,7 @@ def login():
 def home():
     if "username" in session:
         currentPosts = getposts()
+        print(currentPosts)
         username = session["username"]
         return render_template('home.html', username=username, currentPosts=currentPosts)
     else:
