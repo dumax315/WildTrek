@@ -1,14 +1,12 @@
+{% extends "base.html" %}
+{% block title %}x's Post{% endblock %}
 
-<!DOCTYPE HTML>
-<html> 
-<body>
-    <p>{{message}}</p>
-    <img id="ItemPreview" src={{message}}>
-    
-    <script type="text/javascript">
-        document.getElementById("ItemPreview").src = message;
-        console.log(document.getElementById("ItemPreview").src)
-    </script>
-</body>
+{% block content %}
+<p>{{message}}</p>
+<img id="ItemPreview" src={{message.image}}>
 
-</html>
+<script type="text/javascript">
+    document.getElementById("ItemPreview").src = message;
+    console.log(document.getElementById("ItemPreview").src)
+</script>
+{% endblock %}

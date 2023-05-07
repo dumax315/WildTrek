@@ -1,4 +1,5 @@
 #map{
     display:block;
     height:90vh;
+    z-index: 0;
 }
