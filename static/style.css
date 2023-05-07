@@ -179,3 +179,219 @@ a.signInUpOtherPage {
     text-align: center;
     margin-top: 1em;
 }
+
+
+/* code for about page */
+.aboutText {
+    font-family: 'ubuntu';
+    font-style: normal;
+    font-weight: 500;
+    font-size: 16px;
+    text-align: center;
+    color: #535865;
+    max-width: 600px;
+}
+
+.aboutTitle .wildTrekName {
+    font-size: 40px;
+    margin-top: 21px;
+    line-height: initial;
+}
+
+.aboutText {
+    max-width: 600px;
+    font-size: 24px;
+    margin: auto;
+}
+
+.aboutText p{
+    margin: 1em 1.4em;
+}
+
+img.logo.aboutLogo {
+    width: 65px;
+}
+
+.ageBottomText {
+    font-family: 'ubuntu';
+    font-style: normal;
+    font-weight: 500;
+    font-size: 18px;
+
+    text-align: center;
+
+    color: #535865;
+    margin: auto;
+    width: 80vw;
+    max-width: 600px;
+    margin-top: 3em;
+}
+
+.ageQuestionText {
+    font-family: 'ubuntu';
+font-style: normal;
+font-weight: 500;
+font-size: 40px;
+text-align: center;
+
+
+color: #535865;
+margin: auto;
+    width: 80vw;
+    max-width: 600px;
+    margin-top: 2em;
+    margin-bottom: 1em;
+}
+
+
+/* code for feed pages */
+.feedHeader {
+    position: relative;
+}
+
+.feedHeader .wildTrekName {
+    margin: 0;
+    font-size: 50px;
+}
+
+.homeUsernameText {
+    position: absolute;
+    top: 0.4em;
+    right: 2em;
+    font-family: 'ubuntu';
+    color: #000000;
+}
+
+.displayedPost {
+    max-width: 650px;
+    margin: auto;
+    width: 80vw;
+    position: relative;
+
+}
+
+.postAuthorContainer {
+    background: #96BE8C;
+    width: 100%;
+    display: flex;
+    align-items: center;
+}
+
+img#postAuthorPfp {
+    margin: .8em;
+    max-width: 50px;
+    max-height: 50px;
+}
+
+div#postAuthorName {
+    font-family: 'ubuntu';
+    font-style: normal;
+    font-size: 35px;
+
+    color: #000000;
+    margin-left: .5em;
+}
+
+#postImage{
+    width: 100%;
+}
+
+.extraScrollSpace{
+    height: calc(78px);
+}
+
+#postLike{
+    background: url('./images/comment.png') no-repeat;
+    cursor: pointer;
+    width: 70px;
+    height: 70px;
+    border: none;
+  }
+#postComment{
+    background:url(./images/comment.png) no-repeat;
+    cursor:pointer;
+    border:none;
+    width:100px;
+    height:100px;
+}
+
+ul.tags {
+    list-style-type: none;
+    display: flex;
+    max-width: 492px;
+    width: 100%;
+    justify-content: space-between;
+    flex: wra;
+    flex-wrap: wrap;
+    padding: 0px;
+    /* margin-bottom: 1em; */
+}
+
+.tags li {
+    background: #96BE8C;
+    padding: .5em;
+    border-radius: .5em;
+    margin-bottom: 1em;
+}
+
+a.sPostButton {
+    color: #000000f5;
+    text-decoration: none;
+    font-family: "ubuntu";
+    font-size: 100px;
+    position: absolute;
+    top: 128px;
+    /* transform: translateY(-50%); */
+    border-radius: 100%;
+    background: #978e8ebd;
+    padding: 0px;
+    margin: 0px;
+    width: 100px;
+    height: 100px;
+    text-align: center;
+    line-height: 90px;
+    display: block;
+    /* vertical-align: top; */
+}
+
+
+a.sPostButton.rightPostButton {
+    right:0px;
+}
+
+
+
+
+@media screen and (max-width: 400px) {
+    .displayedPost {
+        width:100%;
+    }
+    
+}
+
+
+/* style of one post */
+
+ul.comments {
+    background: #A0c497;
+    /* padding: 2em; */
+    padding-top: 1em;
+    font-family: ubuntu;
+    padding-bottom: 1em;
+    border-radius: 1em;
+}
+
+span.comName {
+    font-size: 20px;
+    font-family: ubuntu;
+}
+
+div#postCaption {
+    font-family: 'ubuntu';
+    font-style: normal;
+    font-weight: 500;
+    font-size: 35px;
+    /* line-height: 44px; */
+    /* text-align: center; */
+    color: #535865;
+}

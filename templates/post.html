@@ -1,15 +1,10 @@
 {% extends "base.html" %}
-{% block title %}post{% endblock %}
 
-{% block head %}
-    <!--Our CSS-->
-    <link rel="stylesheet" href="static/mapStyle.css">
-    
-{% endblock %}
+{% block title %}x's Post{% endblock %}
 
 {% block content %}
 <p>{{message}}</p>
-<img id="ItemPreview" src={{message}}>
+<img id="ItemPreview" src={{message.image}}>
 
 <script type="text/javascript">
     document.getElementById("ItemPreview").src = message;

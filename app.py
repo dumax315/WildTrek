@@ -2,12 +2,18 @@ import os
 
 from flask import (Flask, redirect, render_template, request,
                    send_from_directory, url_for, session, flash)
+import requests
 import pymongo
 import bcrypt
 import urllib.parse
 from bson.objectid import ObjectId
+import base64
 import uuid
 import boto3, botocore
+import random
+import datetime
+#import PIL
+from exif import Image
 
 app = Flask(__name__)
 
@@ -56,7 +62,7 @@ def signup():
             user_data = users.find_one({"username": username})
             new_username = user_data['username']
    
-            return render_template('home.html', username=new_username)
+            return redirect(url_for("home"))
     return render_template('signup.html')
 
 @app.route("/login", methods=["POST", "GET"])
@@ -88,16 +94,77 @@ def login():
 
 @app.route('/home')
 def home():
+    args = request.args
+    print(args.get("index"))
     if "username" in session:
+        currentPosts = getposts()
+        # print(currentPosts)
         username = session["username"]
-        return render_template('home.html', username=username)
+        index=0
+        if(args.get("index") != None):
+            try:
+                index =  int(args.get("index"))
+            except:
+                print("werird index")
+
+        return render_template('home.html', username=username, currentPosts=currentPosts, index=index)
     else:
         return redirect(url_for("index"))
+
+
+@app.route("/onePost", methods=["GET"])
+def onePost():
+    args = request.args
+    print(args.get("id"))
+   
+    if(args.get("id") == None):
+        return redirect(url_for("index"))
+    idStr = args.get("id")
+    if "username" in session:
+
+        username = session["username"]
+    else:
+        username ="join today"
+    if(idStr[:4] == "post"):
+        currentOnePost = post(idStr[4:])
+    else:
+        currentOnePost = post(idStr)
+
+    if(currentOnePost == None):
+        return render_template('error.html', message='Post not found')
+    return render_template('onePost.html', username=username, currentOnePost=currentOnePost)
 
 @app.route("/signout")
 def signout():
     session.clear()
     return redirect(url_for("index"))
+
+@app.route('/about')
+def about():
+    if "username" in session:
+        username = session["username"]
+        return render_template('about.html')
+    else:
+        return redirect(url_for("index"))
+    
+@app.route('/ageConfirmation')
+def ageConfirmation():
+    if "username" in session:
+        username = session["username"]
+        return render_template("ageConfirmation.html")
+    else:
+        return redirect(url_for("index"))
+    
+@app.route('/ageSubmit')
+def ageSubmit():
+    args = request.args
+    print(args.get("old"))
+    # return render_template('about.html')
+    if "username" in session:
+        username = session["username"]
+        return redirect(url_for("home"))
+    else:
+        return redirect(url_for("index"))
 
 @app.route('/favicon.ico')
 def favicon():
@@ -115,7 +182,6 @@ def hello():
        print('Request for hello page received with no name or blank name -- redirecting')
        return redirect(url_for('index'))
 
-
 @app.route("/upload", methods=["POST", "GET"])
 def upload():
     print('Request for upload received')
@@ -123,6 +189,26 @@ def upload():
         return redirect(url_for("index"))
     if request.method == "POST":
         image = request.files['img']
+        image.seek(0)
+        image_bytes = image.read()
+        exif_img = Image(image)
+
+        #Extract coordinates of the taken image
+        coordinates = []
+        if(exif_img.has_exif):
+            try:
+                gps_latitude =exif_img.gps_latitude
+                gps_longitude = exif_img.gps_longitude
+                gps_latitude_ref = exif_img.gps_latitude_ref
+                gps_longitude_ref = exif_img.gps_longitude_ref
+                if gps_latitude and gps_longitude and gps_latitude_ref and gps_longitude_ref:
+                    coordinates = convert_coordinates(gps_latitude, gps_longitude, gps_latitude_ref, gps_longitude_ref)
+            except Exception as e:
+                print(e)
+        if len(coordinates) != 2:
+            rand_lat = random.uniform(-0.1, 0.1)
+            rand_lon = random.uniform(-0.1, 0.1)
+            coordinates = [47.759+rand_lat, -122.189+rand_lon] #uw bothell coordinates
         #generating own id for aws s3 filenames
         id = uuid.uuid4().hex
         image.filename = id
@@ -132,7 +218,23 @@ def upload():
 
         caption = request.form.get("caption")
         hashtags = request.form.getlist("hashtags")
-        post_input = {'_id': id,'image': fileLocation, 'caption': caption, 'hashtags': hashtags}
+
+        suggestions = identify(image_bytes)
+        plant_suggestions = suggestions if len(suggestions) > 0 else ['N/A']
+
+        post_input = {'_id': id,
+                      'timestamp': datetime.datetime.utcnow(),
+                      'username':session['username'], 
+                      'image': fileLocation, 
+                      'caption': caption, 
+                      'hashtags': hashtags, 
+                      'plant_suggestions': plant_suggestions,
+                      'lat': coordinates[0],
+                      'lon': coordinates[1],
+                      'likes': 0,
+                      'liked_users': [],
+                      'comments': []
+        }
         posts.insert_one(post_input)
         users.find_one_and_update({'username':session['username']}, {'$push': {'posts': post_input}})
 
@@ -145,6 +247,8 @@ def upload_file_to_s3(file, bucket_name, acl="public-read"):
             aws_access_key_id=app.config['S3_KEY'],
             aws_secret_access_key=app.config['S3_SECRET']
         )
+        #file_data = file.read()
+        file.seek(0)
         s3.upload_fileobj(
             file,
             bucket_name,
@@ -154,25 +258,139 @@ def upload_file_to_s3(file, bucket_name, acl="public-read"):
                 "ContentType": file.content_type    #Set appropriate content type as per the file
             }
         )
+        #s3.put_object(Body=file_data, Bucket=bucket_name, Key=file.filename)
     except Exception as e:
         print("Something Happened: ", e)
     #     return e
     # return "{}{}".format(app.config["S3_LOCATION"], file.filename)
 
-@app.route("/post", methods=["POST", "GET"])
-def post():
-    id = '2d305346cb004a4eb921e27aa7c213d2'
-    post_found = posts.find_one({"_id": id})
+def convert_coordinates(gps_latitude, gps_longitude, gps_latitude_ref, gps_longitude_ref):
+    # Convert GPS latitude to decimal degrees
+    gps_latitude_decimal = gps_latitude[0] + (gps_latitude[1] / 60) + (gps_latitude[2] / 3600)
+    if gps_latitude_ref in ['S', 'W']:
+        gps_latitude_decimal = -gps_latitude_decimal
+    # Convert GPS longitude to decimal degrees
+    gps_longitude_decimal = gps_longitude[0] + (gps_longitude[1] / 60) + (gps_longitude[2] / 3600)
+    if gps_longitude_ref in ['S', 'W']:
+        gps_longitude_decimal = -gps_longitude_decimal
+
+    return [gps_latitude_decimal, gps_longitude_decimal]
+
+
+#@app.route("/post", methods=["POST", "GET"])
+def post(id):
+    post_found = posts.find_one({"_id": id}) 
     if post_found:
         print('Post Found')
         #encoded = base64.b64encode(post_found['image'])
-        return render_template('post.html', message=post_found['image'])
+        #return render_template('post.html', message=post_found['image'])
+        print(post_found)
+        return post_found
     print('Post Not Found')
-    return redirect(url_for("home"))
+    return None
+
+#@app.route("/getposts", methods=["POST", "GET"])
+def getposts():
+    return list(posts.find({}).sort('timestamp', pymongo.DESCENDING))
+
+print(getposts())
+
+
+
+def user_info(username):
+    user_found = users.find_one({'username': username})
+    info = {}
+    if user_found:
+        info = {}
+        info['username'] = user_found['username']
+        info['bio'] = user_found['bio']
+        info['posts'] = user_found['posts']
+    return info
+
+@app.route("/updatebio", methods=["POST"])
+def update_bio():
+    if 'username' in session:
+        try:
+            text = request.form.get("bio")
+            users.find_one_and_update({'username': session['username']}, {'$set': {'bio': text}})
+        except Exception as e:
+            print(e)
+    return redirect(url_for('home'))
+
+@app.route("/updateprofilepicture", methods=["POST"])
+def update_profile_picture():
+    if 'username' in session:
+        try:
+            image = request.files['img']
+            image.filename = session['username'] + 'profile'
+            upload_file_to_s3(image, app.config["S3_BUCKET"])
+            fileLocation='http://' + os.getenv('S3_BUCKET_NAME') + '.s3.amazonaws.com/' + image.filename
+            users.find_one_and_update({'username': session['username']}, {'$set': {'profile_picture': fileLocation}})
+        except Exception as e:
+            print(e)
+    return redirect(url_for('home'))
+
+@app.route("/like", methods=["POST"])
+def like():
+    if 'username' in session:
+        try:
+            args = request.args
+            id = args.get("id")
+            post_found = posts.find_one({"_id": id}) 
+            if post_found:
+                if session['username'] in post_found['liked_users']:
+                    posts.find_one_and_update({"_id": id}, {'$inc': {'likes': -1}, '$pull': { 'liked_users': { '$in': [session['username']]}}})
+                else:
+                    posts.find_one_and_update({"_id": id}, {'$inc': {'likes': 1}, '$push': {'liked_users': session['username']}})
+        except Exception as e:
+            print(e)
+    return redirect(url_for('home'))
+
+@app.route("/comment", methods=["POST"])
+def comment():
+    if 'username' in session:
+        try:
+            args = request.args
+            id = args.get("id")
+            print(request.json)
+            comment = session['username'] + ': ' + request.json["comment"]
+            post_found = posts.find_one({"_id": id}) 
+            if post_found:
+                posts.find_one_and_update({"_id": id}, {'$push': {'comments': comment}})
+        except Exception as e:
+            print(e)
+    return redirect(url_for('home'))
+
+def identify(image_bytes):
+    print('Identifying image')
+    encoded = base64.b64encode(image_bytes)
+    encoded_string = encoded.decode("ascii")
+    #print(encoded_string)
+    params = {
+        "api_key": os.getenv('PLANTID_API_KEY'),
+        "images": [encoded_string]
+    }
+    headers = {
+        "Content-Type": "application/json",
+    }
+    response = requests.post("https://api.plant.id/v2/identify",
+                        json=params,
+                        headers=headers)
+    print(response.status_code)
+    if response.status_code >= 200 and response.status_code < 300:
+        suggestions = response.json()['suggestions'] #list of dict suggestions
+        max_suggestion = len(suggestions) if len(suggestions) <= 3 else 3
+        name_list = []
+        for i in range(max_suggestion):
+            name_list.append(suggestions[i]['plant_name'])
+        print(name_list)
+        return name_list  
+    return []
+
+
+
 # extra code to get some shops instead of post Temperary
 import overpy
-
-
 def get_shops(latitude, longitude):
     # Initialize the API
     api = overpy.Overpass()
@@ -190,39 +408,44 @@ def get_shops(latitude, longitude):
 @app.route('/map')
 def map():
     # Get shops data from OpenStreetMap
-    shops = get_shops(47.654170, -122.302610)
+    mapPosts = getposts()
 
     # Initialize variables
-    id_counter = 0
     markers = ''
-    for node in shops.nodes:
-
-        # Create unique ID for each marker
-        idd = 'shop' + str(id_counter)
-        id_counter += 1
+    for node in mapPosts:
+    # node = mapPosts[0]
+    # Create unique ID for each marker
+        idd = "post"+str(node["_id"])
 
         # Check if shops have name and website in OSM
         try:
-            shop_brand = node.tags['brand']
+            image = node["image"]
         except:
-            shop_brand = 'null'
+            image = 'null'
 
         try:
-            shop_website = node.tags['website']
+            caption = node["caption"]
         except:
-            shop_website = 'null'
+            caption = 'null'
+
+        try:
+            lat = node["lat"]
+            lon = node["lon"]
+        except:
+            print("no lat")
+            lat = 47.7606092 + (random.random()-.5)*.00001
+            lon = -122.188031+ (random.random()-.5)*.00001
 
         # Create the marker and its pop-up for each shop
         markers += "var {idd} = L.marker([{latitude}, {longitude}]);\
-                    {idd}.addTo(map).bindPopup('{brand}<br>{website}');".format(idd=idd, latitude=node.lat,\
-                                                                                longitude=node.lon,
-                                                                                brand=shop_brand,\
-                                                                                website=shop_website)
+                    {idd}.addTo(map).bindPopup(\'<a class=\"mapPost\" href=\"/onePost?id={idd}\"><img src={image}><div class=\"mapPostCaption\">{caption}</div></a>\');".format(idd=idd, latitude=lat,\
+                                                                                longitude=lon,\
+                                                                                image=image,\
+                                                                                caption=caption
+                                                                                )
 
     # Render the page with the map
     return render_template('map.html', markers=markers, lat=47.654170, lon=-122.302610)
 
-
-
 if __name__ == '__main__':
-   app.run()
+   app.run(debug=True)
