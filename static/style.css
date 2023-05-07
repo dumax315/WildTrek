@@ -24,7 +24,7 @@ img.topBorderImage {
     text-align: center;
 }
 
-img.bottomBorderImage {
+img.bottomBorderImagew {
     width: 800px;
     right: 50%;
     transform: translate(50%,0%);
@@ -68,7 +68,6 @@ img.bottomBorderImage {
 
 }
 .largeButtons .signup {
-
     margin-top: 1em;
 }
 .signup:hover {
